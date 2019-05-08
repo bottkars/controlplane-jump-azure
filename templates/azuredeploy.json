@@ -485,7 +485,7 @@
                             "PKS_DOMAIN_NAME": "[parameters('PKSDomainName')]",
                             "PKS_SUBDOMAIN_NAME": "[parameters('PKSSubdomainName')]",
                             "SSH_PUBLIC_KEY": "[parameters('sshkeyData')]",
-                            "PCF_OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
+                            "OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
                             "PKS_NOTIFICATIONS_EMAIL": "[parameters('notificationsEmail')]",
                             "NET_16_BIT_MASK": "[parameters('net16bitmask')]",
                             "PKS_AUTOPILOT": "[parameters('PKSAutopilot')]",

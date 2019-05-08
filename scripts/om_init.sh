@@ -196,7 +196,7 @@ target: ${PCF_OPSMAN_FQDN}
 connect-timeout: 30          # default 5
 request-timeout: 3600        # default 1800
 skip-ssl-validation: true   # default false
-username: ${PCF_OPSMAN_USERNAME}
+username: ${OPSMAN_USERNAME}
 password: ${PIVNET_UAA_TOKEN}
 decryption-passphrase: ${PIVNET_UAA_TOKEN}
 EOF
@@ -205,7 +205,7 @@ EOF
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 configure-authentication \
 --decryption-passphrase ${PIVNET_UAA_TOKEN}  \
---username ${PCF_OPSMAN_USERNAME} \
+--username ${OPSMAN_USERNAME} \
 --password ${PIVNET_UAA_TOKEN}
 
 echo checking deployed products

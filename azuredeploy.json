@@ -401,7 +401,7 @@
                             "CONCOURSE_DOMAIN_NAME": "[parameters('CONCOURSEDomainName')]",
                             "CONCOURSE_SUBDOMAIN_NAME": "[parameters('CONCOURSESubdomainName')]",
                             "SSH_PUBLIC_KEY": "[parameters('sshkeyData')]",
-                            "PCF_OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
+                            "OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
                             "CONCOURSE_NOTIFICATIONS_EMAIL": "[parameters('notificationsEmail')]",
                             "NET_16_BIT_MASK": "[parameters('net16bitmask')]",
                             "CONCOURSE_AUTOPILOT": "[parameters('CONCOURSEAutopilot')]",

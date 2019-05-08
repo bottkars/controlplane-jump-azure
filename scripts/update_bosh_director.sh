@@ -30,7 +30,7 @@ shift
 done
 
 export OM_TARGET=${PCF_OPSMAN_FQDN}
-export OM_USERNAME=${PCF_OPSMAN_USERNAME}
+export OM_USERNAME=${OPSMAN_USERNAME}
 export OM_PASSWORD="${PIVNET_UAA_TOKEN}"
 EXPORT_FILE=${HOME_DIR}/$(uuidgen)
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
