@@ -1,0 +1,2 @@
+https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/update.sh
+https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/deploy_base.sh
