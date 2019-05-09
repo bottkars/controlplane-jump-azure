@@ -19,10 +19,10 @@ DOMAIN="${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}"
  --force \
  --debug \
  -d ${DOMAIN} \
- -d PCF.${DOMAIN} \
+ -d pcf.${DOMAIN} \
  -d plane.${DOMAIN} \
  -d uaa.${DOMAIN} \
- -d *.${DOMAIN} \
+ -d *.${DOMAIN}
 
 cp ${HOME_DIR}/.acme.sh/${DOMAIN}/${DOMAIN}.key ${HOME_DIR}
 cp ${HOME_DIR}/.acme.sh/${DOMAIN}/fullchain.cer ${HOME_DIR}
