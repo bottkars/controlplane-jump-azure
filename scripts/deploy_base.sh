@@ -169,7 +169,7 @@ AUTHENTICATION_RESPONSE=$(curl \
   https://network.pivotal.io/api/v2/authentication/access_tokens)
 
 PIVNET_ACCESS_TOKEN=$(echo ${AUTHENTICATION_RESPONSE} | jq -r '.access_token')
-# Get the release JSON for the PKS version you want to install:
+# Get the release JSON for the CONCOURSE version you want to install:
 
 RELEASE_JSON=$(curl \
     --fail \
@@ -186,7 +186,7 @@ curl \
   --request POST \
   ${EULA_ACCEPTANCE_URL}
 
-# GET TERRAFORM FOR PKS AZURE
+# GET TERRAFORM FOR CONCOURSE AZURE
 
 
 DOWNLOAD_ELEMENT=$(echo ${RELEASE_JSON} |\
@@ -209,26 +209,23 @@ curl \
 sudo -S -u ${ADMIN_USERNAME} unzip ${FILENAME}
 cd ./pivotal-cf-terraforming-azure-*/
 cd terraforming-control-plane
-NET_16_BIT_MASK="10.0" # static for now due to bug
- # preparation work for terraform
+
 cat << EOF > terraform.tfvars
 client_id             = "${AZURE_CLIENT_ID}"
 client_secret         = "${AZURE_CLIENT_SECRET}"
 subscription_id       = "${AZURE_SUBSCRIPTION_ID}"
 tenant_id             = "${AZURE_TENANT_ID}"
 env_name              = "${ENV_NAME}"
-env_short_name        = "${ENV_SHORT_NAME}"
 ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
 location              = "${LOCATION}"
-dns_suffix            = "${PKS_DOMAIN_NAME}"
-dns_subdomain         = "${PKS_SUBDOMAIN_NAME}"
+dns_suffix            = "${CONCOURSE_DOMAIN_NAME}"
+dns_subdomain         = "${CONCOURSE_SUBDOMAIN_NAME}"
 ops_manager_private_ip = "${NET_16_BIT_MASK}.8.4"
-# pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
-# pks_subnet_cidrs = "${NET_16_BIT_MASK}.0.0/22"
+pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
+plane_cidrs = "${NET_16_BIT_MASK}.10.0/28"
 # services_subnet_cidrs = "${NET_16_BIT_MASK}.4.0/22"
 pcf_virtual_network_address_space = ["${NET_16_BIT_MASK}.0.0/16"]
 EOF
-# patch terraform for managed identity if tf is 0.29
 
 
 chmod 755 terraform.tfvars
@@ -237,6 +234,8 @@ ${SCRIPT_DIR}/deploy_docker.sh ${HOME_DIR}
 
 END_BASE_DEPLOY_TIME=$(date)
 echo ${END_BASE_DEPLOY_TIME} end base deployment
+
+
 
 
 echo "Base install finished, now initializing opsman

@@ -98,9 +98,9 @@
             "minLength": 3,
             "allowedValues": [
                 "2.4-build.145",
-                "2.4-build.142"
+                "2.5.2-build.172"
             ],
-            "defaultValue": "2.4-build.145",
+            "defaultValue": "2.5.2-build.172",
             "metadata": {
                 "description": "Image Name of Operation Manager Image, currently only 2.4.2 and 2.4.3"
             }

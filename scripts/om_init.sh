@@ -54,27 +54,12 @@ function retryop()
 ###
 pushd ${HOME_DIR}
 ### updating om
-wget -O om https://github.com/pivotal-cf/om/releases/download/0.56.0/om-linux && \
+wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
   chmod +x om && \
   sudo mv om /usr/local/bin/
 ###  
-cd ./pivotal-cf-terraforming-azure-*/terraforming-pks
+cd ./pivotal-cf-terraforming-azure-*/terraforming-control-plane
 
-PATCH_SERVER="https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/patches/"
-wget -q ${PATCH_SERVER}main.tf -O ./main.tf
-wget -q ${PATCH_SERVER}variables.tf -O ./variables.tf
-wget -q ${PATCH_SERVER}modules/pks/networking.tf -O ../modules/pks/networking.tf
-wget -q ${PATCH_SERVER}modules/pks/variables.tf -O ../modules/pks/variables.tf
-# end patch 
-az login --service-principal \
-  --username ${AZURE_CLIENT_ID} \
-  --password ${AZURE_CLIENT_SECRET} \
-  --tenant ${AZURE_TENANT_ID}
- 
-az role definition delete \
-  --name ${AZURE_SUBSCRIPTION_ID}-${ENV_NAME}-pks-worker-role
-az role definition delete \
-  --name ${AZURE_SUBSCRIPTION_ID}-${ENV_NAME}-pks-master-role
 
 terraform init
 
@@ -102,31 +87,7 @@ az network dns record-set a add-record \
 --record-set-name api \
 --ipv4-address ${AZURE_LB_PUBLIC_IP}
 
-az network nsg rule create \
---nsg-name ${ENV_NAME}-bosh-deployed-vms-security-group \
---resource-group ${ENV_NAME} \
---name Port_8443 \
---priority 220 \
---source-address-prefixes '*' \
---source-port-ranges '*' \
---destination-address-prefixes '*' \
---destination-port-ranges 8443 \
---access allow \
---protocol Tcp \
---description "Allow UAA and K8S Access"
 
-az network nsg rule create \
---nsg-name ${ENV_NAME}-bosh-deployed-vms-security-group \
---resource-group ${ENV_NAME} \
---name Port_9021 \
---priority 230 \
---source-address-prefixes '*' \
---source-port-ranges '*' \
---destination-address-prefixes '*' \
---destination-port-ranges 9021 \
---access allow \
---protocol Tcp \
---description "Allow UAA and K8S Access"
 
 # network peerings for bosh
 echo creating network peerings
@@ -175,9 +136,9 @@ BOSH_DEPLOYED_VMS_SECURITY_GROUP_NAME="$(terraform output bosh_deployed_vms_secu
 PCF_OPSMAN_FQDN="$(terraform output ops_manager_dns)"
 INFRASTRUCTURE_SUBNET_CIDRS="$(terraform output infrastructure_subnet_cidrs)"
 SERVICES_SUBNET_CIDRS="$(terraform output services_subnet_cidrs)"
-PKS_SUBNET_CIDRS="$(terraform output pks_subnet_cidrs)"
+PLANE_SUBNET_CIDRS="$(terraform output plane_cidrs)"
 SERVICES_SUBNET_GATEWAY="$(terraform output services_subnet_gateway)"
-PKS_SUBNET_GATEWAY="$(terraform output pks_subnet_gateway)"
+PKS_SUBNET_GATEWAY="$(terraform output control_plane_subnet_cidr)"
 INFRASTRUCTURE_SUBNET_GATEWAY="$(terraform output infrastructure_subnet_gateway)"
 echo "checking opsman api ready using the new fqdn ${PCF_OPSMAN_FQDN},
 if the . keeps showing, check if ns record for ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} has
