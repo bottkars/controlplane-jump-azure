@@ -1,0 +1,4 @@
+.env
+/examples/*
+/examples/bosh-vars.yml
+
