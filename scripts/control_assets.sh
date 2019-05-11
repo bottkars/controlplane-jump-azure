@@ -58,7 +58,7 @@ for FILE in "${FILES[@]}"; do
 done
 
 
-echo $(date) start downloading kubectl
+echo $(date) start downloading controlplane assets 
 
 conductor/scripts/stemcell_loader.sh -s 250.38 -i 233
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
