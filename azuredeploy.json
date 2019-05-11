@@ -403,7 +403,6 @@
                             "ENV_NAME": "[parameters('envName')]",
                             "ENV_SHORT_NAME": "[parameters('envShortName')]",
                             "OPS_MANAGER_IMAGE_URI": "[concat('https://opsmanager',parameters('opsmanImageregion'),'.blob.core.windows.net/images/ops-manager-',parameters('opsmanImage'),'.vhd')]",
-                            "LOCATION": "[parameters('location')]",
                             "CONCOURSE_DOMAIN_NAME": "[parameters('CONCOURSEDomainName')]",
                             "CONCOURSE_SUBDOMAIN_NAME": "[parameters('CONCOURSESubdomainName')]",
                             "SSH_PUBLIC_KEY": "[parameters('sshkeyData')]",
@@ -411,8 +410,7 @@
                             "NET_16_BIT_MASK": "[parameters('net16bitmask')]",
                             "CONCOURSE_AUTOPILOT": "[parameters('CONCOURSEAutopilot')]",
                             "USE_SELF_CERTS": "[parameters('useSelfCerts')]",
-                            "JUMP_VNET": "[variables('virtualNetworkName')]",
-                            "JUMP_RG": "[resourceGroup().name]"
+                            "JUMP_VNET": "[variables('virtualNetworkName')]"
                         }
                     }
                 }

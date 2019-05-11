@@ -54,6 +54,81 @@ function retryop()
 ###
 pushd ${HOME_DIR}
 ### updating om
+
+
+#  FAKING TERRAFORM DOWNLOAD FOR Control Plane
+PRODUCT_SLUG="elastic-runtime"
+RELEASE_ID="347828"
+#
+
+
+AUTHENTICATION_RESPONSE=$(curl \
+  --fail \
+  --data "{\"refresh_token\": \"${PIVNET_UAA_TOKEN}\"}" \
+  https://network.pivotal.io/api/v2/authentication/access_tokens)
+
+PIVNET_ACCESS_TOKEN=$(echo ${AUTHENTICATION_RESPONSE} | jq -r '.access_token')
+# Get the release JSON for the CONCOURSE version you want to install:
+
+RELEASE_JSON=$(curl \
+    --fail \
+    "https://network.pivotal.io/api/v2/products/${PRODUCT_SLUG}/releases/${RELEASE_ID}")
+
+# ACCEPTING EULA
+
+EULA_ACCEPTANCE_URL=$(echo ${RELEASE_JSON} |\
+  jq -r '._links.eula_acceptance.href')
+
+curl \
+  --fail \
+  --header "Authorization: Bearer ${PIVNET_ACCESS_TOKEN}" \
+  --request POST \
+  ${EULA_ACCEPTANCE_URL}
+
+# GET TERRAFORM FOR CONCOURSE AZURE
+
+
+DOWNLOAD_ELEMENT=$(echo ${RELEASE_JSON} |\
+  jq -r '.product_files[] | select(.aws_object_key | contains("terraforming-azure"))')
+
+FILENAME=$(echo ${DOWNLOAD_ELEMENT} |\
+  jq -r '.aws_object_key | split("/") | last')
+
+URL=$(echo ${DOWNLOAD_ELEMENT} |\
+  jq -r '._links.download.href')
+
+# download terraform
+
+curl \
+  --fail \
+  --location \
+  --output ${FILENAME} \
+  --header "Authorization: Bearer ${PIVNET_ACCESS_TOKEN}" \
+  ${URL}
+sudo -S -u ${ADMIN_USERNAME} unzip ${FILENAME}
+cd ./pivotal-cf-terraforming-azure-*/
+cd terraforming-control-plane
+
+cat << EOF > terraform.tfvars
+env_name              = "${ENV_NAME}"
+ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
+location              = "${LOCATION}"
+dns_suffix            = "${CONCOURSE_DOMAIN_NAME}"
+dns_subdomain         = "${CONCOURSE_SUBDOMAIN_NAME}"
+ops_manager_private_ip = "${NET_16_BIT_MASK}.8.4"
+pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
+plane_cidr = "${NET_16_BIT_MASK}.10.0/28"
+pcf_virtual_network_address_space = ["${NET_16_BIT_MASK}.0.0/16"]
+EOF
+
+
+chmod 755 terraform.tfvars
+chown ${ADMIN_USERNAME}.${ADMIN_USERNAME} terraform.tfvars
+${SCRIPT_DIR}/deploy_docker.sh ${HOME_DIR} 
+
+
+
+
 wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
   chmod +x om && \
   sudo mv om /usr/local/bin/

@@ -33,6 +33,7 @@ function get_setting() {
   echo $value
 }
 
+METADATA=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute?api-version=2017-08-01")
 custom_data_file="/var/lib/cloud/instance/user-data.txt"
 settings=$(cat ${custom_data_file})
 AZURE_VAULT=$(get_setting AZURE_VAULT)
@@ -40,7 +41,7 @@ ADMIN_USERNAME=$(get_setting ADMIN_USERNAME)
 ENV_NAME=$(get_setting ENV_NAME)
 ENV_SHORT_NAME=$(get_setting ENV_SHORT_NAME)
 OPS_MANAGER_IMAGE_URI=$(get_setting OPS_MANAGER_IMAGE_URI)
-LOCATION=$(get_setting LOCATION)
+LOCATION=$(echo $METADATA | jq -r .location)
 CONCOURSE_DOMAIN_NAME=$(get_setting CONCOURSE_DOMAIN_NAME)
 CONCOURSE_SUBDOMAIN_NAME=$(get_setting CONCOURSE_SUBDOMAIN_NAME)
 OPSMAN_USERNAME=$(get_setting OPSMAN_USERNAME)
@@ -49,13 +50,14 @@ CONCOURSE_AUTOPILOT=$(get_setting CONCOURSE_AUTOPILOT)
 NET_16_BIT_MASK=$(get_setting NET_16_BIT_MASK)
 DOWNLOAD_DIR="/datadisks/disk1"
 USE_SELF_CERTS=$(get_setting USE_SELF_CERTS)
-JUMP_RG=$(get_setting JUMP_RG)
+JUMP_RG=$(echo $METADATA  | jq -r .resourceGroupName)
 JUMP_VNET=$(get_setting JUMP_VNET)
 HOME_DIR="/home/${ADMIN_USERNAME}"
 LOG_DIR="${HOME_DIR}/conductor/logs"
 SCRIPT_DIR="${HOME_DIR}/conductor/scripts"
 ENV_DIR="${HOME_DIR}/conductor/env"
 TEMPLATE_DIR="${HOME_DIR}/conductor/templates"
+AZURE_SUBSCRIPTION_ID=$(echo $METADATA | jq -r .subscriptionId)
 
 sudo -S -u ${ADMIN_USERNAME} mkdir -p ${TEMPLATE_DIR}
 sudo -S -u ${ADMIN_USERNAME} mkdir -p ${SCRIPT_DIR}
@@ -80,12 +82,7 @@ ${SCRIPT_DIR}/vm-disk-utils-0.1.sh
 chown ${ADMIN_USERNAME}.${ADMIN_USERNAME} ${DOWNLOAD_DIR}
 chmod -R 755 ${DOWNLOAD_DIR}
 
-if  [ ! -z ${WAVEFRONT_API} ] && \
-[ ! -z ${WAVEFRONT_TOKEN} ] && \
-[ ${WAVEFRONT_API} != "null" ] && \
-[ ${WAVEFRONT_TOKEN} != "null" ]; then
-  WAVEFRONT=enabled
-fi
+
 
 $(cat <<-EOF > ${HOME_DIR}/.env.sh
 #!/usr/bin/env bash
@@ -147,81 +144,10 @@ wget -O /tmp/bbr.tar https://github.com/cloudfoundry-incubator/bosh-backup-and-r
 
 cd ${HOME_DIR}
 
-#  FAKING TERRAFORM DOWNLOAD FOR Control Plane
-PRODUCT_SLUG="elastic-runtime"
-RELEASE_ID="347828"
-#
 
-
-AUTHENTICATION_RESPONSE=$(curl \
-  --fail \
-  --data "{\"refresh_token\": \"${PIVNET_UAA_TOKEN}\"}" \
-  https://network.pivotal.io/api/v2/authentication/access_tokens)
-
-PIVNET_ACCESS_TOKEN=$(echo ${AUTHENTICATION_RESPONSE} | jq -r '.access_token')
-# Get the release JSON for the CONCOURSE version you want to install:
-
-RELEASE_JSON=$(curl \
-    --fail \
-    "https://network.pivotal.io/api/v2/products/${PRODUCT_SLUG}/releases/${RELEASE_ID}")
-
-# ACCEPTING EULA
-
-EULA_ACCEPTANCE_URL=$(echo ${RELEASE_JSON} |\
-  jq -r '._links.eula_acceptance.href')
-
-curl \
-  --fail \
-  --header "Authorization: Bearer ${PIVNET_ACCESS_TOKEN}" \
-  --request POST \
-  ${EULA_ACCEPTANCE_URL}
-
-# GET TERRAFORM FOR CONCOURSE AZURE
-
-
-DOWNLOAD_ELEMENT=$(echo ${RELEASE_JSON} |\
-  jq -r '.product_files[] | select(.aws_object_key | contains("terraforming-azure"))')
-
-FILENAME=$(echo ${DOWNLOAD_ELEMENT} |\
-  jq -r '.aws_object_key | split("/") | last')
-
-URL=$(echo ${DOWNLOAD_ELEMENT} |\
-  jq -r '._links.download.href')
-
-# download terraform
-
-curl \
-  --fail \
-  --location \
-  --output ${FILENAME} \
-  --header "Authorization: Bearer ${PIVNET_ACCESS_TOKEN}" \
-  ${URL}
-sudo -S -u ${ADMIN_USERNAME} unzip ${FILENAME}
-cd ./pivotal-cf-terraforming-azure-*/
-cd terraforming-control-plane
-
-cat << EOF > terraform.tfvars
-env_name              = "${ENV_NAME}"
-ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
-location              = "${LOCATION}"
-dns_suffix            = "${CONCOURSE_DOMAIN_NAME}"
-dns_subdomain         = "${CONCOURSE_SUBDOMAIN_NAME}"
-ops_manager_private_ip = "${NET_16_BIT_MASK}.8.4"
-pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
-plane_cidr = "${NET_16_BIT_MASK}.10.0/28"
-pcf_virtual_network_address_space = ["${NET_16_BIT_MASK}.0.0/16"]
-EOF
-
-
-chmod 755 terraform.tfvars
-chown ${ADMIN_USERNAME}.${ADMIN_USERNAME} terraform.tfvars
-${SCRIPT_DIR}/deploy_docker.sh ${HOME_DIR} 
 
 END_BASE_DEPLOY_TIME=$(date)
 echo ${END_BASE_DEPLOY_TIME} end base deployment
-
-
-
 
 echo "Base install finished, now initializing opsman
 for install status information, run 'tail -f ${LOG_DIR}/om_init.sh.*.log'"
