@@ -60,7 +60,10 @@ pushd ${HOME_DIR}
 PRODUCT_SLUG="elastic-runtime"
 RELEASE_ID="347828"
 #
-
+wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
+  chmod +x om && \
+  sudo mv om /usr/local/bin/
+###  
 
 AUTHENTICATION_RESPONSE=$(curl \
   --fail \
@@ -105,8 +108,9 @@ curl \
   --output ${FILENAME} \
   --header "Authorization: Bearer ${PIVNET_ACCESS_TOKEN}" \
   ${URL}
-sudo -S -u ${ADMIN_USERNAME} unzip ${FILENAME}
+unzip ${FILENAME}
 cd ./pivotal-cf-terraforming-azure-*/
+PROJECT_DIR=$(pwd)
 cd terraforming-control-plane
 
 cat << EOF > terraform.tfvars
@@ -121,21 +125,13 @@ plane_cidr = "${NET_16_BIT_MASK}.10.0/28"
 pcf_virtual_network_address_space = ["${NET_16_BIT_MASK}.0.0/16"]
 EOF
 
+# Get Azure Secrets and stuff from keyvauls
+TOKEN=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -s -H Metadata:true | jq -r .access_token)
 
-chmod 755 terraform.tfvars
-chown ${ADMIN_USERNAME}.${ADMIN_USERNAME} terraform.tfvars
-${SCRIPT_DIR}/deploy_docker.sh ${HOME_DIR} 
-
-
-
-
-wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
-  chmod +x om && \
-  sudo mv om /usr/local/bin/
-###  
-cd ./pivotal-cf-terraforming-azure-*/terraforming-control-plane
-
-
+export TF_VAR_subscription_id=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute?api-version=2017-08-01" | jq -r .subscriptionId)
+export TF_VAR_client_secret=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURECLIENTSECRET?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+export TF_VAR_client_id=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURECLIENTID?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+export TF_VAR_tenant_id=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURETENANTID?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
 terraform init
 
 retryop "terraform apply -auto-approve" 3 10
@@ -143,87 +139,6 @@ retryop "terraform apply -auto-approve" 3 10
 terraform output ops_manager_ssh_private_key > ${HOME_DIR}/opsman
 chmod 600 ${HOME_DIR}/opsman
 
- 
-AZURE_LB_PUBLIC_IP=$(az network public-ip show \
-  --resource-group ${ENV_NAME} \
-  --name ${ENV_NAME}-pks-lb-ip \
-  --query "{address: ipAddress}" \
-  --output tsv)
-
-az network dns record-set a create \
---resource-group ${ENV_NAME} \
---zone-name ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} \
---name api --ttl 60 
-
-
-az network dns record-set a add-record \
---resource-group ${ENV_NAME} \
---zone-name ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} \
---record-set-name api \
---ipv4-address ${AZURE_LB_PUBLIC_IP}
-
-
-
-# network peerings for bosh
-echo creating network peerings
-
-VNet1Id=$(az network vnet show \
-  --resource-group ${JUMP_RG} \
-  --name ${JUMP_VNET} \
-  --query id --out tsv)
-
-VNet2Id=$(az network vnet show \
-  --resource-group ${ENV_NAME} \
-  --name ${ENV_NAME}-virtual-network \
-  --query id --out tsv)
-
-az network vnet peering create --name PKS-Peer \
---remote-vnet-id ${VNet2Id} \
---resource-group ${JUMP_RG} \
---vnet-name ${JUMP_VNET} \
---allow-forwarded-traffic \
---allow-gateway-transit \
---allow-vnet-access
-
-az network vnet peering create --name JUMP-Peer \
---remote-vnet-id ${VNet1Id} \
---resource-group ${ENV_NAME} \
---vnet-name ${ENV_NAME}-virtual-network \
---allow-forwarded-traffic \
---allow-gateway-transit \
---allow-vnet-access
-
-
-
-
-###
-START_OPSMAN_DEPLOY_TIME=$(date)
-echo ${START_OPSMAN_DEPLOY_TIME} start opsman deployment
-
-
-
-
-NET_16_BIT_MASK="10.0" #this is static in terraform 0.29
-AZURE_NAMESERVERS=$(terraform output env_dns_zone_name_servers)
-SSH_PRIVATE_KEY="$(terraform output -json ops_manager_ssh_private_key | jq .value)"
-SSH_PUBLIC_KEY="$(terraform output ops_manager_ssh_public_key)"
-BOSH_DEPLOYED_VMS_SECURITY_GROUP_NAME="$(terraform output bosh_deployed_vms_security_group_name)"
-PCF_OPSMAN_FQDN="$(terraform output ops_manager_dns)"
-INFRASTRUCTURE_SUBNET_CIDRS="$(terraform output infrastructure_subnet_cidrs)"
-SERVICES_SUBNET_CIDRS="$(terraform output services_subnet_cidrs)"
-PLANE_SUBNET_CIDRS="$(terraform output plane_cidrs)"
-SERVICES_SUBNET_GATEWAY="$(terraform output services_subnet_gateway)"
-PKS_SUBNET_GATEWAY="$(terraform output control_plane_subnet_cidr)"
-INFRASTRUCTURE_SUBNET_GATEWAY="$(terraform output infrastructure_subnet_gateway)"
-echo "checking opsman api ready using the new fqdn ${PCF_OPSMAN_FQDN},
-if the . keeps showing, check if ns record for ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} has
-${AZURE_NAMESERVERS}
-as server entries"
-until $(curl --output /dev/null --silent --head --fail -k -X GET "https://${PCF_OPSMAN_FQDN}/api/v0/info"); do
-    printf '.'
-    sleep 5
-done
-echo "done"
 
 OM_ENV_FILE="${HOME_DIR}/om_${ENV_NAME}.env"
 cat << EOF > ${OM_ENV_FILE}
@@ -238,20 +153,6 @@ decryption-passphrase: ${PIVNET_UAA_TOKEN}
 EOF
 
 
-om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-configure-authentication \
---decryption-passphrase ${PIVNET_UAA_TOKEN}  \
---username ${OPSMAN_USERNAME} \
---password ${PIVNET_UAA_TOKEN}
-
-echo checking deployed products
-om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-deployed-products
-
-
-echo checking deployed products
-om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-deployed-products
 declare -a FILES=("${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key" \
 "${HOME_DIR}/fullchain.cer")
 # are we first time ?!
@@ -274,48 +175,31 @@ for FILE in "${FILES[@]}"; do
 done
 
 
+PCF_OPSMAN_FQDN="$(terraform output ops_manager_dns)"
+echo "checking opsman api ready using the new fqdn ${PCF_OPSMAN_FQDN},
+if the . keeps showing, check if ns record for ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} has
+${AZURE_NAMESERVERS}
+as server entries"
+until $(curl --output /dev/null --silent --head --fail -k -X GET "https://${PCF_OPSMAN_FQDN}/api/v0/info"); do
+    printf '.'
+    sleep 5
+done
+echo "done"
+
+wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
+
+../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN}
+
+retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
+
+echo checking deployed products
+om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
+deployed-products
+
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 update-ssl-certificate \
     --certificate-pem "$(cat ${HOME_DIR}/fullchain.cer)" \
     --private-key-pem "$(cat ${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key)"
-
-
-cd ${HOME_DIR}
-cat << EOF > ${TEMPLATE_DIR}/director_vars.yaml
-subscription_id: ${AZURE_SUBSCRIPTION_ID}
-tenant_id: ${AZURE_TENANT_ID}
-client_id: ${AZURE_CLIENT_ID}
-client_secret: ${AZURE_CLIENT_SECRET}
-resource_group_name: ${ENV_NAME}
-bosh_storage_account_name: ${ENV_SHORT_NAME}director
-default_security_group: ${BOSH_DEPLOYED_VMS_SECURITY_GROUP_NAME}
-ssh_public_key: ${SSH_PUBLIC_KEY}
-ssh_private_key: ${SSH_PRIVATE_KEY}
-ntp_servers_string: 'time.windows.com'
-infrastructure-subnet: "${ENV_NAME}-virtual-network/${ENV_NAME}-infrastructure-subnet"
-pks-subnet: "${ENV_NAME}-virtual-network/${ENV_NAME}-pks-subnet"
-services-subnet: "${ENV_NAME}-virtual-network/${ENV_NAME}-pks-services-subnet"
-services_subnet_cidrs: "${SERVICES_SUBNET_CIDRS}"
-infrastructure_subnet_cidrs: "${INFRASTRUCTURE_SUBNET_CIDRS}"
-infrastructure_subnet_range: "${NET_16_BIT_MASK}.8.1-${NET_16_BIT_MASK}.8.10"
-infrastructure_subnet_gateway: "${INFRASTRUCTURE_SUBNET_GATEWAY}"
-services_subnet_range: "${NET_16_BIT_MASK}.16.1-${NET_16_BIT_MASK}.16.4"
-services_subnet_gateway: "$SERVICES_SUBNET_GATEWAY"
-pks_subnet_cidrs: "${PKS_SUBNET_CIDRS}"
-pks_subnet_gateway: "${PKS_SUBNET_GATEWAY}"
-pks_subnet_range: "${NET_16_BIT_MASK}.12.1-${NET_16_BIT_MASK}.12.4"
-fullchain: "$(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\\r\\n", $0}')"
-EOF
-
-#infrastructure_cidr: "${INFRASTRUCTURE_CIDR}"
-
-#pks_gateway: "${NET_16_BIT_MASK}.0.1"
-#services_cidr: "${SERVICES_CIDR}"
-
-om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
- configure-director --config ${TEMPLATE_DIR}/director_config.yaml --vars-file ${TEMPLATE_DIR}/director_vars.yaml
-
-retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
 
 
 echo checking deployed products
@@ -323,15 +207,4 @@ om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
  deployed-products
 
 popd
-END_OPSMAN_DEPLOY_TIME=$(date)
-$(cat <<-EOF >> ${HOME_DIR}/.env.sh
-PCF_OPSMAN_FQDN="${PCF_OPSMAN_FQDN}"
-EOF
-)
 echo "opsman deployment finished at $(date)"
-if [ "${PKS_AUTOPILOT}" = "TRUE" ]; then
-    echo "Now calling PKS deployment"
-    sudo -S -u ${ADMIN_USERNAME} ${SCRIPT_DIR}/deploy_pks.sh
-fi
-echo "Finished deployment !!!
-if you tailed the installation log, it is time to 'ctrl-c' "
