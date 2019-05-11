@@ -7,6 +7,12 @@ eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME
 PRODUCT_SLUG="p-control-plane-components"
 PCF_VERSION="0.0.32"
 RELEASE_ID="359492"
+
+TOKEN=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -s -H Metadata:true | jq -r .access_token)
+
+PIVNET_UAA_TOKEN=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/PIVNETUAATOKEN?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+
+
 echo "retrieving pivnet access token from refresh token"
 
 PIVNET_ACCESS_TOKEN=$(curl \
@@ -62,9 +68,6 @@ echo $(date) start downloading controlplane assets
 
 conductor/scripts/stemcell_loader.sh -s 250.38 -i 233
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
-
-
-
 bosh upload-stemcell *bosh-stemcell*.tgz
 bosh upload-release concourse-release-*.tgz
 bosh upload-release credhub-release-*.tgz
