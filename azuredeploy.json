@@ -31,6 +31,13 @@
                 "description": "Name of Azure Vault for Secrets"
             }
         },
+        "keyVaultRG": {
+            "type": "string",
+            "minLength": 3,
+            "metadata": {
+                "description": "Name of Resource Group hosting Azure KeyVault for Secrets within Tenant"
+            }
+        },        
         "CONCOURSEDomainName": {
             "type": "string",
             "minLength": 7,
@@ -191,6 +198,7 @@
             "name": "[concat(parameters('keyVaultName'), '/add')]",
             "apiVersion": "2018-02-14",
             "location": "[parameters('location')]",
+            "resourceGroup": "[parameters('keyVaultRG')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
