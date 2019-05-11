@@ -21,8 +21,7 @@ DOMAIN="${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}"
  -d ${DOMAIN} \
  -d pcf.${DOMAIN} \
  -d plane.${DOMAIN} \
- -d uaa.${DOMAIN} \
- -d *.${DOMAIN}
+ -d uaa.${DOMAIN} 
 
 cp ${HOME_DIR}/.acme.sh/${DOMAIN}/${DOMAIN}.key ${HOME_DIR}
 cp ${HOME_DIR}/.acme.sh/${DOMAIN}/fullchain.cer ${HOME_DIR}
