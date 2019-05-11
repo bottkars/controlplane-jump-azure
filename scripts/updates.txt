@@ -4,3 +4,4 @@ https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/c
 https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/create_self_certs.sh
 https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/accept_eula.sh
 https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/control_assets.sh
+https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/om_init.sh
