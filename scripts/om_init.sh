@@ -143,17 +143,7 @@ terraform output ops_manager_ssh_private_key > ${HOME_DIR}/opsman
 chmod 600 ${HOME_DIR}/opsman
 
 
-OM_ENV_FILE="${HOME_DIR}/om_${ENV_NAME}.env"
-cat << EOF > ${OM_ENV_FILE}
----
-target: ${PCF_OPSMAN_FQDN}
-connect-timeout: 30          # default 5
-request-timeout: 3600        # default 1800
-skip-ssl-validation: true   # default false
-username: ${OPSMAN_USERNAME}
-password: ${PIVNET_UAA_TOKEN}
-decryption-passphrase: ${PIVNET_UAA_TOKEN}
-EOF
+
 
 
 declare -a FILES=("${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key" \
@@ -180,14 +170,26 @@ done
 
 PCF_OPSMAN_FQDN="$(terraform output ops_manager_dns)"
 echo "checking opsman api ready using the new fqdn ${PCF_OPSMAN_FQDN},
-if the . keeps showing, check if ns record for ${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME} has
-${AZURE_NAMESERVERS}
+if the . keeps showing, check if ns record for $(terraform output control_plane_domain) has
+$(terraform output env_dns_zone_name_servers)
 as server entries"
 until $(curl --output /dev/null --silent --head --fail -k -X GET "https://${PCF_OPSMAN_FQDN}/api/v0/info"); do
     printf '.'
     sleep 5
 done
 echo "done"
+
+OM_ENV_FILE="${HOME_DIR}/om_${ENV_NAME}.env"
+cat << EOF > ${OM_ENV_FILE}
+---
+target: ${PCF_OPSMAN_FQDN}
+connect-timeout: 30          # default 5
+request-timeout: 3600        # default 1800
+skip-ssl-validation: true   # default false
+username: ${OPSMAN_USERNAME}
+password: ${PIVNET_UAA_TOKEN}
+decryption-passphrase: ${PIVNET_UAA_TOKEN}
+EOF
 
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
 
