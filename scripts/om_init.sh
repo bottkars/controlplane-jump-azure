@@ -119,7 +119,7 @@ curl \
   ${URL}
 unzip ${FILENAME}
 cd ./pivotal-cf-terraforming-azure-*/
-PROJECT_DIR=$(pwd)
+export PROJECT_DIR=$(pwd)
 cd terraforming-control-plane
 
 cat << EOF > terraform.tfvars
@@ -163,9 +163,9 @@ declare -a FILES=("${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key" \
 for FILE in "${FILES[@]}"; do
     if [ ! -f $FILE ]; then
       if [ "${USE_SELF_CERTS}" = "TRUE" ]; then
-        sudo -S -u ${ADMIN_USERNAME} ${SCRIPT_DIR}/create_self_certs.sh
+        ${SCRIPT_DIR}/create_self_certs.sh
       else  
-        sudo -S -u ${ADMIN_USERNAME} ${SCRIPT_DIR}/create_certs.sh
+        ${SCRIPT_DIR}/create_certs.sh
       fi
     fi  
 done
