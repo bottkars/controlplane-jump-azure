@@ -11,75 +11,42 @@
             }
         },
         "sshKeyData": {
-            "minLength": "20",
+            "minLength": 20,
             "type": "string",
             "metadata": {
                 "description": "ssh Public Key to log on to the jumpbox"
             }
         },
-        "clientID": {
-            "minLength": "36",
-            "maxLength": "36",
-            "type": "string",
-            "metadata": {
-                "description": "Azure Service Principal"
-            }
-        },
-        "clientSecret": {
-            "type": "securestring",
-            "minLength": "20",
-            "metadata": {
-                "description": "Azure Service Principal Secret"
-            }
-        },        
-        "tenantID": {
-            "type": "string",
-            "minLength": "36",
-            "maxLength": "36",
-            "metadata": {
-                "description": "Azure Tenant ID for Deployment"
-            }
-        },
-        "subscriptionID": {
-            "type": "string",
-            "minLength": "36",
-            "maxLength": "36",
-            "metadata": {
-                "description": "Azure Subscription ID for Deployment"
-            }
-        },
-
-        "pivnetToken": {
-            "type": "securestring",
-            "minLength": "34",
-            "maxLength": "34",
-            "metadata": {
-                "description": "Your UAA API Token from Pivotal Network"
-            }
-        },
         "envShortName": {
             "type": "string",
-            "minLength": "3",
+            "minLength": 3,
             "metadata": {
                 "description": "will be prefix for CONCOURSE opsman and director storage accounts"
             }
         },
-       "CONCOURSEDomainName": {
+        "keyVaultName": {
             "type": "string",
-            "minLength": "7",
+            "minLength": 3,
+            "metadata": {
+                "description": "Name of Azure Vault for Secrets"
+            }
+        },
+        "CONCOURSEDomainName": {
+            "type": "string",
+            "minLength": 7,
             "metadata": {
                 "description": "DNS domain (domain-suffix) for CONCOURSE ( where subdomain will be created in)"
             }
         },
         "CONCOURSESubdomainName": {
             "type": "string",
-            "minLength": "3",
+            "minLength": 3,
             "metadata": {
                 "description": "subdomain (domain-prefix) for CONCOURSE"
             }
         },
         "JumphostDNSLabelPrefix": {
-            "minLength": "3",
+            "minLength": 3,
             "type": "string",
             "metadata": {
                 "description": "Unique DNS Name for the Public IP used to access the Jumphost."
@@ -105,25 +72,17 @@
                 "description": "Image Name of Operation Manager Image, currently only 2.4.2 and 2.4.3"
             }
         },
-         "net16bitmask": {
+        "net16bitmask": {
             "type": "string",
-            "minLength": "3",
+            "minLength": 3,
             "defaultValue": "10.12",
             "metadata": {
                 "description": "first 16 bit of ip range in format xxx.xxx"
             }
         },
-        "notificationsEmail": {
-            "type": "string",
-            "minLength": "5",
-            "defaultValue": "user@example.com",
-            "metadata": {
-                "description": "email to send notifications"
-            }
-        },
         "opsmanUsername": {
             "type": "string",
-            "minLength": "5",
+            "minLength": 5,
             "defaultValue": "opsman",
             "metadata": {
                 "description": "user for Opsman"
@@ -222,11 +181,31 @@
             "[concat(variables('baseUri'),  '/scripts/om_init.sh')]",
             "[concat(variables('baseUri'),  '/scripts/stemcell_loader.sh')]",
             "[concat(variables('baseUri'),  '/scripts/deploy_base.sh')]",
-            "[concat(variables('baseUri'),  '/templates/director_config.yaml')]",           
+            "[concat(variables('baseUri'),  '/templates/director_config.yaml')]",
             "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/shared_scripts/ubuntu/vm-disk-utils-0.1.sh"
         ]
     },
     "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "apiVersion": "2018-02-14",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+            ],
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Compute/virtualMachines', variables('vmName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]",
+                        "permissions": {
+                            "secrets": ["get","list"]
+                        }
+                    }
+                ]
+            }
+        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('DiagnosticsStorageAccountName')]",
@@ -302,6 +281,9 @@
             "apiVersion": "2018-04-01",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('DiagnosticsStorageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
@@ -388,12 +370,8 @@
                 "parameters": {
                     "customData": {
                         "value": {
-                            "AZURE_CLIENT_ID": "[parameters('clientID')]",
-                            "AZURE_CLIENT_SECRET": "[parameters('clientSecret')]",
                             "ADMIN_USERNAME": "[parameters('adminUsername')]",
-                            "AZURE_SUBSCRIPTION_ID": "[parameters('subscriptionID')]",
-                            "AZURE_TENANT_ID": "[parameters('tenantID')]",
-                            "PIVNET_UAA_TOKEN": "[parameters('pivnetToken')]",
+                            "AZURE_VAULT": "[parameters('keyVaultName')]",
                             "ENV_NAME": "[parameters('envName')]",
                             "ENV_SHORT_NAME": "[parameters('envShortName')]",
                             "OPS_MANAGER_IMAGE_URI": "[concat('https://opsmanager',parameters('opsmanImageregion'),'.blob.core.windows.net/images/ops-manager-',parameters('opsmanImage'),'.vhd')]",
@@ -402,12 +380,12 @@
                             "CONCOURSE_SUBDOMAIN_NAME": "[parameters('CONCOURSESubdomainName')]",
                             "SSH_PUBLIC_KEY": "[parameters('sshkeyData')]",
                             "OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
-                            "CONCOURSE_NOTIFICATIONS_EMAIL": "[parameters('notificationsEmail')]",
                             "NET_16_BIT_MASK": "[parameters('net16bitmask')]",
                             "CONCOURSE_AUTOPILOT": "[parameters('CONCOURSEAutopilot')]",
                             "USE_SELF_CERTS": "[parameters('useSelfCerts')]",
                             "JUMP_VNET": "[variables('virtualNetworkName')]",
-                            "JUMP_RG": "[resourceGroup().name]"                        }
+                            "JUMP_RG": "[resourceGroup().name]"
+                        }
                     }
                 }
             }
@@ -430,7 +408,7 @@
                     "timestamp": 2
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('bash -l -c \"./deploy_base.sh', ' ', parameters('tenantID'), ' ', parameters('clientID'), ' ', parameters('clientSecret'), ' 2>&1 | tee /home/', parameters('adminUsername'), '/install.log\"')]"
+                    "commandToExecute": "[concat('bash -l -c \"./deploy_base.sh 2>&1 | tee /home/', parameters('adminUsername'), '/install.log\"')]"
                 }
             }
         }

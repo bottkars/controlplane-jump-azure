@@ -35,12 +35,8 @@ function get_setting() {
 
 custom_data_file="/var/lib/cloud/instance/user-data.txt"
 settings=$(cat ${custom_data_file})
+AZURE_VAULT=$(get_setting AZURE_VAULT)
 ADMIN_USERNAME=$(get_setting ADMIN_USERNAME)
-AZURE_CLIENT_ID=$(get_setting AZURE_CLIENT_ID)
-AZURE_CLIENT_SECRET=$(get_setting AZURE_CLIENT_SECRET)
-AZURE_SUBSCRIPTION_ID=$(get_setting AZURE_SUBSCRIPTION_ID)
-AZURE_TENANT_ID=$(get_setting AZURE_TENANT_ID)
-PIVNET_UAA_TOKEN=$(get_setting PIVNET_UAA_TOKEN)
 ENV_NAME=$(get_setting ENV_NAME)
 ENV_SHORT_NAME=$(get_setting ENV_SHORT_NAME)
 OPS_MANAGER_IMAGE_URI=$(get_setting OPS_MANAGER_IMAGE_URI)
@@ -58,7 +54,6 @@ JUMP_VNET=$(get_setting JUMP_VNET)
 HOME_DIR="/home/${ADMIN_USERNAME}"
 LOG_DIR="${HOME_DIR}/conductor/logs"
 SCRIPT_DIR="${HOME_DIR}/conductor/scripts"
-LOG_DIR="${HOME_DIR}/conductor/logs"
 ENV_DIR="${HOME_DIR}/conductor/env"
 TEMPLATE_DIR="${HOME_DIR}/conductor/templates"
 
@@ -94,12 +89,7 @@ fi
 
 $(cat <<-EOF > ${HOME_DIR}/.env.sh
 #!/usr/bin/env bash
-ADMIN_USERNAME="${ADMIN_USERNAME}"
-AZURE_CLIENT_SECRET="${AZURE_CLIENT_SECRET}"
-AZURE_CLIENT_ID="${AZURE_CLIENT_ID}"
-AZURE_TENANT_ID="${AZURE_TENANT_ID}"
-AZURE_SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"
-PIVNET_UAA_TOKEN="${PIVNET_UAA_TOKEN}"
+AZURE_VAULT=${AZURE_VAULT}
 ENV_NAME="${ENV_NAME}"
 ENV_SHORT_NAME="${ENV_SHORT_NAME}"
 OPS_MANAGER_IMAGE_URI="${OPS_MANAGER_IMAGE_URI}"
@@ -211,10 +201,6 @@ cd ./pivotal-cf-terraforming-azure-*/
 cd terraforming-control-plane
 
 cat << EOF > terraform.tfvars
-client_id             = "${AZURE_CLIENT_ID}"
-client_secret         = "${AZURE_CLIENT_SECRET}"
-subscription_id       = "${AZURE_SUBSCRIPTION_ID}"
-tenant_id             = "${AZURE_TENANT_ID}"
 env_name              = "${ENV_NAME}"
 ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
 location              = "${LOCATION}"
@@ -222,8 +208,7 @@ dns_suffix            = "${CONCOURSE_DOMAIN_NAME}"
 dns_subdomain         = "${CONCOURSE_SUBDOMAIN_NAME}"
 ops_manager_private_ip = "${NET_16_BIT_MASK}.8.4"
 pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
-plane_cidrs = "${NET_16_BIT_MASK}.10.0/28"
-# services_subnet_cidrs = "${NET_16_BIT_MASK}.4.0/22"
+plane_cidr = "${NET_16_BIT_MASK}.10.0/28"
 pcf_virtual_network_address_space = ["${NET_16_BIT_MASK}.0.0/16"]
 EOF
 
