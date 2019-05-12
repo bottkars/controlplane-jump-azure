@@ -73,7 +73,7 @@ example minimum .env file:
 AZURE_VAULT=<your vault name>
 VAULT_RG=<your vault rg>
 IAAS=azure
-JUMPBOX_RG=<CONTROLPLANEJUMPHOST_RG>
+JUMPBOX_RG=<your resource group for the jumpbox>
 JUMPBOX_NAME=<your dns name for the jumpbox e.g. myccjumpbox>
 ADMIN_USERNAME=<admin username for the jumpox>
 ENV_NAME=control
