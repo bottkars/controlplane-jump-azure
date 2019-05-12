@@ -142,7 +142,7 @@ retryop "terraform apply -auto-approve" 3 10
 terraform output ops_manager_ssh_private_key > ${HOME_DIR}/opsman
 chmod 600 ${HOME_DIR}/opsman
 
-declare -a FILES=("${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key" \
+declare -a FILES=("${HOME_DIR}/${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}.key" \
 "${HOME_DIR}/fullchain.cer")
 # are we first time ?!
 
@@ -204,7 +204,7 @@ deployed-products
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 update-ssl-certificate \
     --certificate-pem "$(cat ${HOME_DIR}/fullchain.cer)" \
-    --private-key-pem "$(cat ${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key)"
+    --private-key-pem "$(cat ${HOME_DIR}/${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}.key)"
 
 
 echo checking deployed products
