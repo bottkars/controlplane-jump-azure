@@ -131,19 +131,20 @@ sudo gem install cf-uaac
 
 wget -O terraform.zip https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip && \
   unzip terraform.zip && \
-  sudo mv terraform /usr/local/bin
+  mv terraform /usr/local/bin
 
 wget -O bosh https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-5.4.0-linux-amd64 && \
   chmod +x bosh && \
-  sudo mv bosh /usr/local/bin/
+  mv bosh /usr/local/bin/
 
 wget -O /tmp/bbr.tar https://github.com/cloudfoundry-incubator/bosh-backup-and-restore/releases/download/v1.2.8/bbr-1.2.8.tar && \
   tar xvC /tmp/ -f /tmp/bbr.tar && \
-  sudo mv /tmp/releases/bbr /usr/local/bin/
+  mv /tmp/releases/bbr /usr/local/bin/
 
 
-cd ${HOME_DIR}
-
+wget -O texplate https://github.com/pivotal-cf/texplate/releases/download/v0.3.0/texplate_linux_amd64  && \
+  chmod +x texplate && \
+  mv texplate /usr/local/bin/
 
 
 END_BASE_DEPLOY_TIME=$(date)
