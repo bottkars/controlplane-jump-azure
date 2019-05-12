@@ -50,7 +50,7 @@ declare -a FILES=("uaa-release*" \
     "bosh-dns-aliases-release*" \
 )
 # are we first time ?!
-DOWNLOAD_DIR_FULL=$DOWNLOAD_DIR/$PRODUCT_SLUG/${PRODUCT_VERSION}
+DOWNLOAD_DIR_FULL=$DOWNLOAD_DIR/$PRODUCT_SLUG/${PCF_VERSION}
 mkdir -p $DOWNLOAD_DIR_FULL
 echo $DOWNLOAD_DIR_FULL
 for FILE in "${FILES[@]}"; do
