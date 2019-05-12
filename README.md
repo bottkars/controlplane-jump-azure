@@ -111,7 +111,7 @@ az group deployment validate --resource-group ${JUMPBOX_RG} \
     CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
     CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
     keyVaultName=${AZURE_VAULT} \
-    keyVaultRG=${VAULT_RG} \
+    keyVaultRG=${VAULT_RG}
 ```
 
 ### deploy all things
@@ -129,7 +129,7 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
     CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
     keyVaultName=${AZURE_VAULT} \
-    keyVaultRG=${VAULT_RG} \
+    keyVaultRG=${VAULT_RG}
 ```
 
 ## clean/delete deployment
