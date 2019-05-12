@@ -58,7 +58,7 @@ pushd ${HOME_DIR}
 
 #  FAKING TERRAFORM DOWNLOAD FOR Control Plane
 PRODUCT_SLUG="elastic-runtime"
-RELEASE_ID="347828"
+RELEASE_ID="363705"
 #
 wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
   chmod +x om && \
