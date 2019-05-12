@@ -121,7 +121,9 @@ unzip ${FILENAME}
 cd ./pivotal-cf-terraforming-azure-*/
 export PROJECT_DIR=$(pwd)
 cd terraforming-control-plane
-
+wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
+wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/scripts/configure-director -O ../scripts/configure-director
+wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/modules/control_plane/main.tf -O ../modules/control_plane/main.tf
 cat << EOF > terraform.tfvars
 env_name              = "${ENV_NAME}"
 ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
@@ -188,8 +190,6 @@ password: ${PIVNET_UAA_TOKEN}
 decryption-passphrase: ${PIVNET_UAA_TOKEN}
 EOF
 
-wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
-wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/scripts/configure-director -O ../scripts/configure-director
 
 export CA_CERT=$(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\\r\\n", $0}')
 

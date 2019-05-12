@@ -75,3 +75,18 @@ bosh upload-release ${DOWNLOAD_DIR_FULL}/garden-runc-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/postgres-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/uaa-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/concourse-release-*.tgz
+
+
+$(cat <<-EOF > ${HOME_DIR}/bosh-vars.yaml
+---
+external_url: https://plane.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}
+persistent_disk_type: 10240
+vm_type: Standard_F2s
+network_name: control-plane-subnet
+azs: [zone-1,zone-2,zone-3]
+wildcard_domain: "*.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}"
+uaa_url: https://uaa.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}
+uaa_ca_cert: |
+  -----BEGIN CERTIFICATE-----
+
+EOF  
