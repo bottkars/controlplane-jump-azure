@@ -90,7 +90,7 @@
         "opsmanUsername": {
             "type": "string",
             "minLength": 5,
-            "defaultValue": "opsman",
+            "defaultValue": "admin",
             "metadata": {
                 "description": "user for Opsman"
             }

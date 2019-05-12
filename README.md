@@ -91,7 +91,19 @@ source ~/.env
 ## start deployment
 
 ```bash
-source ~/.env
+az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group deployment create --resource-group ${JUMPBOX_RG} \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
+    --parameters \
+    adminUsername=${ADMIN_USERNAME} \
+    sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \
+    JumphostDNSLabelPrefix=${JUMPBOX_NAME} \
+    envName=${ENV_NAME} \
+    envShortName=${ENV_SHORT_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
+    keyVaultName=${AZURE_VAULT} \
+    keyVaultRG=${VAULT_RG} \
 ```
 
 ## clean/delete deployment
