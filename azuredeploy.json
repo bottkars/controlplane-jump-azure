@@ -21,7 +21,7 @@
             "type": "string",
             "minLength": 3,
             "metadata": {
-                "description": "will be prefix for CONCOURSE opsman and director storage accounts"
+                "description": "will be prefix for CONTROLPLANE opsman and director storage accounts"
             }
         },
         "keyVaultName": {
@@ -38,18 +38,18 @@
                 "description": "Name of Resource Group hosting Azure KeyVault for Secrets within Tenant"
             }
         },
-        "CONCOURSEDomainName": {
+        "CONTROLPLANEDomainName": {
             "type": "string",
             "minLength": 7,
             "metadata": {
-                "description": "DNS domain (domain-suffix) for CONCOURSE ( where subdomain will be created in)"
+                "description": "DNS domain (domain-suffix) for CONTROLPLANE ( where subdomain will be created in)"
             }
         },
-        "CONCOURSESubdomainName": {
+        "CONTROLPLANESubdomainName": {
             "type": "string",
             "minLength": 3,
             "metadata": {
-                "description": "subdomain (domain-prefix) for CONCOURSE"
+                "description": "subdomain (domain-prefix) for CONTROLPLANE"
             }
         },
         "JumphostDNSLabelPrefix": {
@@ -62,7 +62,7 @@
         "envName": {
             "type": "string",
             "minLength": 3,
-            "defaultValue": "CONCOURSE",
+            "defaultValue": "CONTROLPLANE",
             "metadata": {
                 "description": "environment name for azure resource group and resources"
             }
@@ -95,7 +95,7 @@
                 "description": "user for Opsman"
             }
         },
-        "CONCOURSEAutopilot": {
+        "CONTROLPLANEAutopilot": {
             "type": "string",
             "defaultValue": "TRUE",
             "allowedValues": [
@@ -103,7 +103,7 @@
                 "TRUE"
             ],
             "metadata": {
-                "description": "autodeploy CONCOURSE"
+                "description": "autodeploy CONTROLPLANE"
             }
         },
         "useSelfCerts": {
@@ -319,7 +319,7 @@
                 "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
             ],
             "tags": {
-                "Application": "CONCOURSE Jumphost",
+                "Application": "CONTROLPLANE Jumphost",
                 "AutoDeployed RG": "[parameters('envName')]"
             },
             "properties": {
@@ -405,12 +405,12 @@
                             "ENV_NAME": "[parameters('envName')]",
                             "ENV_SHORT_NAME": "[parameters('envShortName')]",
                             "OPS_MANAGER_IMAGE_URI": "[concat('https://opsmanager',parameters('opsmanImageregion'),'.blob.core.windows.net/images/ops-manager-',parameters('opsmanImage'),'.vhd')]",
-                            "CONCOURSE_DOMAIN_NAME": "[parameters('CONCOURSEDomainName')]",
-                            "CONCOURSE_SUBDOMAIN_NAME": "[parameters('CONCOURSESubdomainName')]",
+                            "CONTROLPLANE_DOMAIN_NAME": "[parameters('CONTROLPLANEDomainName')]",
+                            "CONTROLPLANE_SUBDOMAIN_NAME": "[parameters('CONTROLPLANESubdomainName')]",
                             "SSH_PUBLIC_KEY": "[parameters('sshkeyData')]",
                             "OPSMAN_USERNAME": "[parameters('opsmanUsername')]",
                             "NET_16_BIT_MASK": "[parameters('net16bitmask')]",
-                            "CONCOURSE_AUTOPILOT": "[parameters('CONCOURSEAutopilot')]",
+                            "CONTROLPLANE_AUTOPILOT": "[parameters('CONTROLPLANEAutopilot')]",
                             "USE_SELF_CERTS": "[parameters('useSelfCerts')]",
                             "JUMP_VNET": "[variables('virtualNetworkName')]"
                         }

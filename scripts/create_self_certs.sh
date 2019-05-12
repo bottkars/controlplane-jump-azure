@@ -5,7 +5,7 @@ MYSELF=$(basename $0)
 mkdir -p ${LOG_DIR}
 exec &> >(tee -a "${LOG_DIR}/${MYSELF}.$(date '+%Y-%m-%d-%H').log")
 exec 2>&1
-DOMAIN="${PCF_SUBDOMAIN_NAME}.${PCF_DOMAIN_NAME}"
+DOMAIN="${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
 
 : ${DOMAIN:?must be set the DNS domain root (ex: example.cf-app.com)}
 : ${KEY_BITS:=2048}

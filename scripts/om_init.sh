@@ -80,7 +80,7 @@ AUTHENTICATION_RESPONSE=$(curl \
   https://network.pivotal.io/api/v2/authentication/access_tokens)
 
 PIVNET_ACCESS_TOKEN=$(echo ${AUTHENTICATION_RESPONSE} | jq -r '.access_token')
-# Get the release JSON for the CONCOURSE version you want to install:
+# Get the release JSON for the CONTROLPLANE version you want to install:
 
 RELEASE_JSON=$(curl \
     --fail \
@@ -97,7 +97,7 @@ curl \
   --request POST \
   ${EULA_ACCEPTANCE_URL}
 
-# GET TERRAFORM FOR CONCOURSE AZURE
+# GET TERRAFORM FOR CONTROLPLANE AZURE
 
 
 DOWNLOAD_ELEMENT=$(echo ${RELEASE_JSON} |\
@@ -126,8 +126,8 @@ cat << EOF > terraform.tfvars
 env_name              = "${ENV_NAME}"
 ops_manager_image_uri = "${OPS_MANAGER_IMAGE_URI}"
 location              = "${LOCATION}"
-dns_suffix            = "${CONCOURSE_DOMAIN_NAME}"
-dns_subdomain         = "${CONCOURSE_SUBDOMAIN_NAME}"
+dns_suffix            = "${CONTROLPLANE_DOMAIN_NAME}"
+dns_subdomain         = "${CONTROLPLANE_SUBDOMAIN_NAME}"
 ops_manager_private_ip = "${NET_16_BIT_MASK}.8.4"
 pcf_infrastructure_subnet = "${NET_16_BIT_MASK}.8.0/26"
 plane_cidr = "${NET_16_BIT_MASK}.10.0/28"
@@ -191,6 +191,8 @@ EOF
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/scripts/configure-director -O ../scripts/configure-director
 ../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN} ${OPSMAN_USERNAME}
+
+export CA_CERT=$(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\\r\\n", $0}')
 
 retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
 

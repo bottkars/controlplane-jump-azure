@@ -73,13 +73,13 @@ example minimum .env file:
 AZURE_VAULT=<your vault name>
 VAULT_RG=<your vault rg>
 IAAS=azure
-JUMPBOX_RG=<CONCOURSEJUMPHOST_RG>
+JUMPBOX_RG=<CONTROLPLANEJUMPHOST_RG>
 JUMPBOX_NAME=<your dns name for the jumpbox e.g. myccjumpbox>
 ADMIN_USERNAME=<admin username for the jumpox>
 ENV_NAME=control
 ENV_SHORT_NAME=cckb
-CONCOURSE_DOMAIN_NAME=<your domain, e.g. domain.com>
-CONCOURSE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
+CONTROLPLANE_DOMAIN_NAME=<your domain, e.g. domain.com>
+CONTROLPLANE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
 ```
 
 source the env file with
@@ -88,11 +88,18 @@ source the env file with
 source ~/.env
 ```
 
-
-
 ## start deployment
 
+```bash
+source ~/.env
+```
 
-## clean deployment
+## clean/delete deployment
+```bash
+az keyvault delete-policy --name ${AZURE_VAULT} --object-id $(az vm identity show --resource-group ${JUMPBOX_RG} --name ${JUMPBOX_NAME} --query principalId --output tsv)
+az group delete --name ${JUMPBOX_RG} --yes
+az group delete --name ${ENV_NAME} --yes
+ssh-keygen -R "${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com"
+```
 
 

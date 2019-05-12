@@ -21,8 +21,8 @@ az group deployment validate --resource-group ${JUMPBOX_RG} \
     JumphostDNSLabelPrefix=${JUMPBOX_NAME} \
     envName=${ENV_NAME} \
     envShortName=${ENV_SHORT_NAME} \
-    CONCOURSEDomainName=${CONCOURSE_DOMAIN_NAME} \
-    CONCOURSESubdomainName=${CONCOURSE_SUBDOMAIN_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
     opsmanUsername=${OPSMAN_USERNAME} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG} \
@@ -42,8 +42,8 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     JumphostDNSLabelPrefix=${JUMPBOX_NAME} \
     envName=${ENV_NAME} \
     envShortName=${ENV_SHORT_NAME} \
-    CONCOURSEDomainName=${CONCOURSE_DOMAIN_NAME} \
-    CONCOURSESubdomainName=${CONCOURSE_SUBDOMAIN_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
     opsmanUsername=${OPSMAN_USERNAME} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG} \
@@ -69,11 +69,11 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     envName=${ENV_NAME} \
     envShortName=${ENV_SHORT_NAME} \
     opsmanImage=${OPS_MANAGER_IMAGE} \
-    CONCOURSEDomainName=${CONCOURSE_DOMAIN_NAME} \
-    CONCOURSESubdomainName=${CONCOURSE_SUBDOMAIN_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
     opsmanUsername=${OPSMAN_USERNAME} \
-    notificationsEmail=${CONCOURSE_NOTIFICATIONS_EMAIL} \
-    CONCOURSEAutopilot=${CONCOURSE_AUTOPILOT} \
+    notificationsEmail=${CONTROLPLANE_NOTIFICATIONS_EMAIL} \
+    CONTROLPLANEAutopilot=${CONTROLPLANE_AUTOPILOT} \
     net16bitmask=${NET_16_BIT_MASK} \
     useSelfCerts=${USE_SELF_CERTS} \
     _artifactsLocation=${ARTIFACTS_LOCATION} \
