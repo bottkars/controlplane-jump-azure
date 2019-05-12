@@ -137,7 +137,7 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
 use this to delete the keyvault policy and remove all deployed resources
 
 ```bash
-az keyvault delete-policy --name ${AZURE_VAULT} --object-id $(az vm identity show --resource-group ${JUMPBOX_RG} --name ${JUMPBOX_NAME} --query principalId --output tsv)
+az keyvault delete-policy --name ${AZURE_VAULT} --object-id $(az vm identity show --resource-group ${JUMPBOX_RG} --name controlplanejumphost --query principalId --output tsv)
 az group delete --name ${JUMPBOX_RG} --yes
 az group delete --name ${ENV_NAME} --yes
 ssh-keygen -R "${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com"
