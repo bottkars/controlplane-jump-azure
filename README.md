@@ -88,7 +88,33 @@ source the env file with
 source ~/.env
 ```
 
+## create ssh key for the jumpbox
+
+```bash
+ssh-keygen -t rsa -f ~/${JUMPBOX_NAME} -C ${ADMIN_USERNAME}
+```
+
 ## start deployment
+
+### validate all things
+
+```bash
+az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group deployment validate --resource-group ${JUMPBOX_RG} \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
+    --parameters \
+    adminUsername=${ADMIN_USERNAME} \
+    sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \
+    JumphostDNSLabelPrefix=${JUMPBOX_NAME} \
+    envName=${ENV_NAME} \
+    envShortName=${ENV_SHORT_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
+    keyVaultName=${AZURE_VAULT} \
+    keyVaultRG=${VAULT_RG} \
+```
+
+### deploy all things
 
 ```bash
 az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
@@ -107,6 +133,9 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
 ```
 
 ## clean/delete deployment
+
+use this to delete the keyvault policy and remove all deployed resources
+
 ```bash
 az keyvault delete-policy --name ${AZURE_VAULT} --object-id $(az vm identity show --resource-group ${JUMPBOX_RG} --name ${JUMPBOX_NAME} --query principalId --output tsv)
 az group delete --name ${JUMPBOX_RG} --yes
