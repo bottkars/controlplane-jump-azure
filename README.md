@@ -27,7 +27,7 @@ This Repo will Provide
 
 the next steps are to be performed on your local host
 
-### Prepare Azure Key Vault a key Vault
+### Prepare Azure Key Vault
 
 use your existing or new key-vault to store secrets.
 The Template to deploy the JumpBox assumes that the Key-Vault is in the Same subscription but different ResourceGroup
@@ -64,7 +64,30 @@ unset AZURE_CLIENT_SECRET
 unset PIVNET_UAA_TOKEN
 ```
 
-## Prepare local env file 
+## Prepare local env file
+
+we will need local env file *or* a template parameter file variables to store names parameters used during deployment
+
+example minimum .env file:
+```bash
+AZURE_VAULT=<your vault name>
+VAULT_RG=<your vault rg>
+IAAS=azure
+JUMPBOX_RG=<CONCOURSEJUMPHOST_RG>
+JUMPBOX_NAME=<your dns name for the jumpbox e.g. myccjumpbox>
+ADMIN_USERNAME=<admin username for the jumpox>
+ENV_NAME=control
+ENV_SHORT_NAME=cckb
+CONCOURSE_DOMAIN_NAME=<your domain, e.g. domain.com>
+CONCOURSE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
+```
+
+source the env file with
+
+```bash
+source ~/.env
+```
+
 
 
 ## start deployment

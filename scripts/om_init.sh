@@ -176,6 +176,7 @@ done
 echo "done"
 
 OM_ENV_FILE="${HOME_DIR}/om_${ENV_NAME}.env"
+### change method back to not store OM Password going forward
 cat << EOF > ${OM_ENV_FILE}
 ---
 target: ${PCF_OPSMAN_FQDN}
@@ -188,8 +189,8 @@ decryption-passphrase: ${PIVNET_UAA_TOKEN}
 EOF
 
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
-
-../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN}
+wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/scripts/configure-director -O ../scripts/configure-director
+../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN} ${OPSMAN_USERNAME}
 
 retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
 
