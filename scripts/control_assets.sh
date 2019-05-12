@@ -46,13 +46,13 @@ declare -a FILES=("uaa-release*" \
     "garden-runc-release*" \
     "credhub-release*" \
     "control-plane*" \
-    "controlplane-release*" \
+    "concourse-release*" \
     "bosh-dns-aliases-release*" \
 )
 # are we first time ?!
 DOWNLOAD_DIR_FULL=$DOWNLOAD_DIR/$PRODUCT_SLUG/${PRODUCT_VERSION}
-mkdir -p $STEMCELL_DIR
-echo $STEMCELL_DIR
+mkdir -p $DOWNLOAD_DIR_FULL
+echo $DOWNLOAD_DIR_FULL
 for FILE in "${FILES[@]}"; do
     om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
     download-product \
@@ -60,7 +60,7 @@ for FILE in "${FILES[@]}"; do
     --pivnet-file-glob "${FILE}" \
     --pivnet-product-slug ${PRODUCT_SLUG} \
     --product-version ${PCF_VERSION} \
-    --output-directory ${DOWNLOAD_DIR}
+    --output-directory ${DOWNLOAD_DIR_FULL}
 done
 
 
@@ -74,3 +74,4 @@ bosh upload-release ${DOWNLOAD_DIR_FULL}/credhub-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/garden-runc-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/postgres-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/uaa-release-*.tgz
+bosh upload-release ${DOWNLOAD_DIR_FULL}/concourse-release-*.tgz
