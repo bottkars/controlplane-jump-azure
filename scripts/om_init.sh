@@ -190,9 +190,10 @@ EOF
 
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/ci/assets/template/director-config.yml -O ../ci/assets/template/director-config.yml
 wget https://raw.githubusercontent.com/bottkars/terraforming-azure/patch-1/scripts/configure-director -O ../scripts/configure-director
-../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN} ${OPSMAN_USERNAME}
 
 export CA_CERT=$(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\\r\\n", $0}')
+
+../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN} ${OPSMAN_USERNAME}
 
 retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
 
