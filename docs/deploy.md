@@ -14,7 +14,7 @@ deployment using the default parameters only passes a minimum required parameter
 ```bash
 az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
 az group deployment validate --resource-group ${JUMPBOX_RG} \
-    --template-uri https://raw.githubusercontent.com/bottkars/concourse-jump-azure/$BRANCH/azuredeploy.json \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
     adminUsername=${ADMIN_USERNAME} \
     sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \
@@ -35,7 +35,7 @@ az group deployment validate --resource-group ${JUMPBOX_RG} \
 ```bash
 az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
 az group deployment create --resource-group ${JUMPBOX_RG} \
-    --template-uri https://raw.githubusercontent.com/bottkars/concourse-jump-azure/$BRANCH/azuredeploy.json \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
     adminUsername=${ADMIN_USERNAME} \
     sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \
@@ -56,7 +56,7 @@ installation using customized parameter set´s all required parameters from vari
 ```bash
 az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
 az group deployment create --resource-group ${JUMPBOX_RG} \
-    --template-uri https://raw.githubusercontent.com/bottkars/concourse-jump-azure/$BRANCH/azuredeploy.json \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
     adminUsername=${ADMIN_USERNAME} \
     sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \

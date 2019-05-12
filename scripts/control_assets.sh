@@ -48,7 +48,7 @@ declare -a FILES=("uaa-release*" \
 "garden-runc-release*" \
 "credhub-release*" \
 "control-plane*" \
-"concourse-release*" \
+"controlplane-release*" \
 "bosh-dns-aliases-release*" \
 )
 # are we first time ?!
@@ -69,7 +69,7 @@ echo $(date) start downloading controlplane assets
 conductor/scripts/stemcell_loader.sh -s 250.38 -i 233
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
 bosh upload-stemcell *bosh-stemcell*.tgz
-bosh upload-release concourse-release-*.tgz
+bosh upload-release controlplane-release-*.tgz
 bosh upload-release credhub-release-*.tgz
 bosh upload-release garden-runc-release-*.tgz
 bosh upload-release postgres-release-*.tgz

@@ -1,4 +1,4 @@
-# concourse-jump-azure
+# controlplane-jump-azure
 
 This Repo set´s up the "Control Plane" for Pivotal Platform Automation from a JumpHost on Azure
 

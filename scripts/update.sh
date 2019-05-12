@@ -5,7 +5,7 @@ echo "this is the updater"
 mkdir -p ${LOG_DIR}
 UPDATE_DIR=${HOME_DIR}/conductor/updates
 mkdir -p ${UPDATE_DIR}
-BASE_URI="https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/"
+BASE_URI="https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/"
 
 
 if ! which parallel > /dev/null; then
@@ -31,5 +31,5 @@ echo "done"
 
 
 
-# wget -O - https://raw.githubusercontent.com/bottkars/concourse-jump-azure/master/scripts/update.sh | bash
+# wget -O - https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/update.sh | bash
 
