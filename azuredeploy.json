@@ -446,6 +446,10 @@
             "type": "string",
             "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
         },
+        "principalID": {
+            "type": "string",
+            "value": "[reference(concat(resourceId('Microsoft.Compute/virtualMachines', variables('vmName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]"
+        },
         "sshCommand": {
             "type": "string",
             "value": "[concat('ssh ', parameters('adminUsername'), '@', reference(variables('publicIPAddressName')).dnsSettings.fqdn)]"
