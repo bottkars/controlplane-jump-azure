@@ -12,6 +12,7 @@ You will need
 - A Pivotal Network Refresh Token
 - Access to Pivotal Automation Control Plane Components on Pivnet
 - local machine with azure az cli
+- a Subdomain to forward NS record for the controlplane subdomain
 
 With this Guide you Create
 
@@ -33,7 +34,7 @@ the next steps are to be performed on your local host
 use your existing or new key-vault to store secrets.
 The Template to deploy the JumpBox assumes that the Key-Vault is in the Same subscription but different ResourceGroup
 
-#### create the keyvault
+#### create the KeyVault
 
 ```bash
 AZURE_VAULT=<your vaultname, name must be unique fro AZURE_VAULT.vault.azure.com>
@@ -81,8 +82,13 @@ ENV_NAME=control
 ENV_SHORT_NAME=cckb
 CONTROLPLANE_DOMAIN_NAME=<your domain, e.g. domain.com>
 CONTROLPLANE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
+```
+
+you might also add some optional Parameters to override default values:
+
+```bash
 CONTROLPLANE_AUTOPILOT=<TRUE or FALSE> to start automatic install of Control Plane from BosH Release
-USE_SELF_CERTS=<TRUE or FALSE> to start automatic install of Control Plane from BosH Release
+USE_SELF_CERTS=<TRUE or FALSE> set tu False to use Let´s Encrypt
 ```
 
 source the env file with
