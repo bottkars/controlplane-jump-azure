@@ -109,7 +109,8 @@ om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
   create-vm-extension 
 
-
+om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
+  apply-changes 
 cat << EOF > ${HOME_DIR}/bosh-vars.yml
 ---
 external_url: https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}
@@ -123,7 +124,9 @@ uaa_ca_cert: |
   $(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\n  ", $0}')
 EOF
 
-bosh deploy -d control-plane control-plane-0.0.31-rc.1.yml   --vars-file=./bosh-vars.yml --ops-file vm-extensions-control.yml
+bosh deploy -n -d control-plane control-plane-0.0.31-rc.1.yml \
+  --vars-file=./bosh-vars.yml \
+  --ops-file vm-extensions-control.yml
 
 export CREDHUB_URL="https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
 export CLIENT_NAME="credhub_admin_client"
