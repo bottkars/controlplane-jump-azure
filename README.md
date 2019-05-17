@@ -54,7 +54,7 @@ PIVNET_UAA_TOKEN=<your pivnet refresh token>
 SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --name ServicePrincipalforControlPlane --output json)
 ## SET the Following Secrets from the temporary Variables
 az keyvault secret set --vault-name ${AZURE_VAULT} \
---name "AZURECLIENTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .appId)--output none
+--name "AZURECLIENTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .appId) --output none
 az keyvault secret set --vault-name ${AZURE_VAULT} \
 --name "AZURETENANTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .tenant) --output none
 az keyvault secret set --vault-name ${AZURE_VAULT} \
