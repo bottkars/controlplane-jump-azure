@@ -55,7 +55,7 @@ PIVNET_UAA_TOKEN=<your pivnet refresh token>
 ## SET the Following Secrets from the temporary Variables
 az keyvault secret set --vault-name ${AZURE_VAULT} --name "AZURECLIENTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .appId)
 az keyvault secret set --vault-name ${AZURE_VAULT} --name "AZURETENANTID" --value $(echo $SERVICE_PRINCIPAL | jq -r .tenant)
-az keyvault secret set --vault-name ${KEY_VAULT} --name "AZURECLIENTSECRET" --value $(echo $SERVICE_PRINCIPAL | jq -r .password)
+az keyvault secret set --vault-name ${AZURE_VAULT} --name "AZURECLIENTSECRET" --value $(echo $SERVICE_PRINCIPAL | jq -r .password)
 az keyvault secret set --vault-name ${AZURE_VAULT} --name "PIVNETUAATOKEN" --value ${PIVNET_UAA_TOKEN}
 ## unset the temporary variables
 unset AZURE_CLIENT_ID
