@@ -1,4 +1,5 @@
 .env
+.env.meetup
 /examples/*
 /examples/bosh-vars.yml
 
