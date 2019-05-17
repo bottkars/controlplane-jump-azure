@@ -118,7 +118,7 @@ cat << EOF > ${HOME_DIR}/bosh-vars.yml
 ---
 external_url: https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}
 persistent_disk_type: 10240
-vm_type: Standard_D3_v2
+vm_type: Standard_DS3_v2
 network_name: ${ENV_NAME}-plane-subnet
 azs: [zone-1,zone-2,zone-3]
 wildcard_domain: "*.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"

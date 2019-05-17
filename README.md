@@ -160,6 +160,7 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG}
 ```
+
 ## clean/delete deployment
 
 use this to delete the keyvault policy and remove all deployed resources
@@ -171,4 +172,9 @@ az group delete --name ${ENV_NAME} --yes
 ssh-keygen -R "${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com"
 ```
 
+## TBD
 
+- deployment script for control plane is in an early stage and does no error checkings
+- documentation
+- Azure Zones vs Aset Selector ( currently deployed in zones)
+- custom vm types
