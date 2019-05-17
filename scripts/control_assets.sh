@@ -5,9 +5,9 @@ cd ${HOME_DIR}
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
 
 PRODUCT_SLUG="p-control-plane-components"
-PCF_VERSION="0.0.32"
-RELEASE_ID="359492"
-STEMCELL_VER="250.38"
+PCF_VERSION="0.0.31"
+RELEASE_ID="342685"
+STEMCELL_VER="250.17"
 
 TOKEN=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -s -H Metadata:true | jq -r .access_token)
 PIVNET_UAA_TOKEN=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/PIVNETUAATOKEN?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
@@ -44,7 +44,7 @@ ${EULA_ACCEPTANCE_URL}
 declare -a FILES=("uaa-release*" \
     "postgres-release*" \
     "garden-runc-release*" \
-    "credhub-release*" \
+    "credhub-release*" \${ENV_NAME}-plane-security-group
     "control-plane*" \
     "concourse-release*" \
     "bosh-dns-aliases-release*" \
@@ -62,9 +62,9 @@ for FILE in "${FILES[@]}"; do
     --product-version ${PCF_VERSION} \
     --output-directory ${DOWNLOAD_DIR_FULL}
 done
+cp ${DOWNLOAD_DIR_FULL}/control-plane* ${HOME_DIR}
 
-
-echo $(date) start downloading controlplane assets
+echo $(date) start uploading controlplane assets into bosh director
 
 conductor/scripts/stemcell_loader.sh -s ${STEMCELL_VER} -i 233
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
@@ -76,17 +76,57 @@ bosh upload-release ${DOWNLOAD_DIR_FULL}/postgres-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/uaa-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/concourse-release-*.tgz
 
+## creating vm extension vars
+echo "Creating VM Extensions"
 
-$(cat <<-EOF > ${HOME_DIR}/bosh-vars.yaml
+
+cat << EOF > ${HOME_DIR}/vm-extensions-vars.yml
 ---
-external_url: https://plane.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}
-persistent_disk_type: 10240
-vm_type: Standard_F2s
-network_name: control-plane-subnet
-azs: [zone-1,zone-2,zone-3]
-wildcard_domain: "*.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}"
-uaa_url: https://uaa.${$CONTROLPLANE_SUBDOMAIN_NAME}.${$CONTROLPLANE_DOMAIN_NAME}
-uaa_ca_cert: |
-  -----BEGIN CERTIFICATE-----
+"control-plane-lb": ${ENV_NAME}-lb
+"control-plane-security-group": ${ENV_NAME}-plane-security-group
+EOF
 
-EOF  
+cat << EOF > ${HOME_DIR}/vm-extensions.yml
+vm-extension-config:
+  name: control-plane-lb
+  cloud_properties:
+   security_group: ((control-plane-security-group))
+   load_balancer: ((control-plane-lb))
+EOF
+
+cat << EOF > ${HOME_DIR}/vm-extensions-control.yml
+- type: replace
+  path: /instance_groups/name=web/vm_extensions?
+  value: [control-plane-lb]
+EOF
+
+om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
+  create-vm-extension  \
+  --config vm-extensions.yml  \
+  --vars-file vm-extensions-vars.yml
+
+om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
+  create-vm-extension 
+
+
+cat << EOF > ${HOME_DIR}/bosh-vars.yml
+---
+external_url: https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}
+persistent_disk_type: 10240
+vm_type: Standard_D3_v2
+network_name: ${ENV_NAME}-plane-subnet
+azs: [zone-1,zone-2,zone-3]
+wildcard_domain: "*.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
+uaa_url: https://uaa.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}
+uaa_ca_cert: |
+  $(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\n  ", $0}')
+EOF
+
+
+
+export CREDHUB_URL="https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
+export CLIENT_NAME="credhub_admin_client"
+export credhub_password="$(credhub get -n "/p-bosh/control-plane/credhub_admin_client_password" -k password)"
+export CA_CERT="$(credhub get -n /p-bosh/control-plane/control-plane-tls -k certificate)"
+
+credhub login -s "${CREDHUB_URL}" --client-name "${CLIENT_NAME}" --client-secret "${credhub_password}" --ca-cert "${CA_CERT}"

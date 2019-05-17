@@ -144,7 +144,7 @@ retryop "terraform apply -auto-approve" 3 10
 terraform output ops_manager_ssh_private_key > ${HOME_DIR}/opsman
 chmod 600 ${HOME_DIR}/opsman
 
-declare -a FILES=("${HOME_DIR}/${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}.key" \
+declare -a FILES=("${HOME_DIR}/${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}.key" \
 "${HOME_DIR}/fullchain.cer")
 # are we first time ?!
 
@@ -195,6 +195,9 @@ export CA_CERT=$(cat ${HOME_DIR}/fullchain.cer | awk '{printf "%s\\r\\n", $0}')
 
 ../scripts/configure-director terraforming-control-plane ${PIVNET_UAA_TOKEN} ${OPSMAN_USERNAME}
 
+
+###
+
 retryop "om --env "${HOME_DIR}/om_${ENV_NAME}.env"  apply-changes" 2 10
 
 echo checking deployed products
@@ -204,12 +207,13 @@ deployed-products
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 update-ssl-certificate \
     --certificate-pem "$(cat ${HOME_DIR}/fullchain.cer)" \
-    --private-key-pem "$(cat ${HOME_DIR}/${CONCOURSE_SUBDOMAIN_NAME}.${CONCOURSE_DOMAIN_NAME}.key)"
+    --private-key-pem "$(cat ${HOME_DIR}/${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}.key)"
 
 
 echo checking deployed products
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
  deployed-products
+
 
 popd
 echo "opsman deployment finished at $(date)"
