@@ -146,6 +146,10 @@ wget -O texplate https://github.com/pivotal-cf/texplate/releases/download/v0.3.0
   chmod +x texplate && \
   mv texplate /usr/local/bin/
 
+wget -O /tmp/credhub.tgz  https://github.com/cloudfoundry-incubator/credhub-cli/releases/download/2.4.0/credhub-linux-2.4.0.tgz
+  tar xzv ./credhub -f /tmp/credhub.tgz && \
+  chmod +x credhub && \
+  mv credhub /usr/local/bin/
 
 END_BASE_DEPLOY_TIME=$(date)
 echo ${END_BASE_DEPLOY_TIME} end base deployment

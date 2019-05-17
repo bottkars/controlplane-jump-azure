@@ -161,6 +161,38 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     keyVaultRG=${VAULT_RG}
 ```
 
+## after Provisioning finished
+
+the base provisioning of the VM takes 5 to 10 Minutes on Azure.
+when provisioning is done, ssh into the Jumphost:
+
+```Bash
+ssh -i ~/${JUMPBOX_NAME} ${ADMIN_USERNAME}@${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com
+```
+
+tail the installation log in the root directory
+
+```bash
+tail -f install.log
+```
+
+the log file will log the base provisioning
+once finisehd, the Opsman Bosh Director and Control Plane Installation Starts.
+the log will instruct you to
+
+```bash
+tail -f /home/bottkars/conductor/logs/om_init.sh.*.log
+```
+
+you will get login credential for you controlplane at the end of he log, or by using:
+from the jumphost
+```bash
+source .env.sh
+eval "$(om --skip-ssl-validation --env om_meetup.env bosh-env --ssh-private-key opsman)"
+credhub get -n $(credhub find | grep uaa_users_admin | awk '{print $3}')
+```
+
+
 ## clean/delete deployment
 
 use this to delete the keyvault policy and remove all deployed resources

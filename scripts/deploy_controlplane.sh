@@ -131,9 +131,13 @@ bosh deploy -n -d control-plane control-plane-0.0.31-rc.1.yml \
   --vars-file=./bosh-vars.yml \
   --ops-file vm-extensions-control.yml
 
-export CREDHUB_URL="https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
-export CLIENT_NAME="credhub_admin_client"
-export credhub_password="$(credhub get -n "/p-bosh/control-plane/credhub_admin_client_password" -k password)"
-export CA_CERT="$(credhub get -n /p-bosh/control-plane/control-plane-tls -k certificate)"
+#export CREDHUB_URL="https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}"
+#export CLIENT_NAME="credhub_admin_client"
+#export credhub_password="$(credhub get -n "/p-bosh/control-plane/credhub_admin_client_password" -k password)"
+#export CA_CERT="$(credhub get -n /p-bosh/control-plane/control-plane-tls -k certificate)"
 
-credhub login -s "${CREDHUB_URL}" --client-name "${CLIENT_NAME}" --client-secret "${credhub_password}" --ca-cert "${CA_CERT}"
+# credhub login -s "${CREDHUB_URL}" --client-name "${CLIENT_NAME}" --client-secret "${credhub_password}" --ca-cert "${CA_CERT}"
+
+echo "You can now login to https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME} with below admin credentials"
+echo " once logged in, use \`fly --target plane login --concourse-url https://plane.${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}\` to signin to flycli"
+credhub get -n $(credhub find | grep uaa_users_admin | awk '{print $3}')
