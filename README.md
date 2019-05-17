@@ -58,10 +58,7 @@ az keyvault secret set --vault-name ${AZURE_VAULT} --name "AZURETENANTID" --valu
 az keyvault secret set --vault-name ${AZURE_VAULT} --name "AZURECLIENTSECRET" --value $(echo $SERVICE_PRINCIPAL | jq -r .password)
 az keyvault secret set --vault-name ${AZURE_VAULT} --name "PIVNETUAATOKEN" --value ${PIVNET_UAA_TOKEN}
 ## unset the temporary variables
-unset AZURE_CLIENT_ID
-unset AZURE_TENANT_ID
-unset AZURE_CLIENT_SECRET
-unset PIVNET_UAA_TOKEN
+unset SERVICE_PRINCIPAL
 ```
 
 ## Prepare local env file
