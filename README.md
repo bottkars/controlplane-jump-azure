@@ -137,8 +137,6 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     envShortName=${ENV_SHORT_NAME} \
     CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
     CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
-    CONTROLPLANEAutopilot=${CONTROLPLANE_AUTOPILOT} \
-    useSelfCerts=${USE_SELF_CERTS} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG}
 ```
@@ -157,6 +155,8 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     envShortName=${ENV_SHORT_NAME} \
     CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
     CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
+    CONTROLPLANEAutopilot=${CONTROLPLANE_AUTOPILOT} \
+    useSelfCerts=${USE_SELF_CERTS} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG}
 ```
