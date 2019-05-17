@@ -12,7 +12,7 @@ You will need
 - A Pivotal Network Refresh Token
 - Access to Pivotal Automation Control Plane Components on Pivnet
 - local machine with azure az cli
-- a Subdomain to forward NS record for the controlplane subdomain
+- a Hosted (Sub)domain for the DNS Zone for Control Plane ( e.g. Google Domain )
 
 With this Guide you Create
 
