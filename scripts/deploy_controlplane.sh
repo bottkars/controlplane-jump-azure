@@ -44,11 +44,12 @@ ${EULA_ACCEPTANCE_URL}
 declare -a FILES=("uaa-release*" \
     "postgres-release*" \
     "garden-runc-release*" \
-    "credhub-release*" \${ENV_NAME}-plane-security-group
+    "credhub-release*" \
     "control-plane*" \
     "concourse-release*" \
-    "bosh-dns-aliases-release*" \
 )
+
+#    "bosh-dns-aliases-release*" \
 # are we first time ?!
 DOWNLOAD_DIR_FULL=$DOWNLOAD_DIR/$PRODUCT_SLUG/${PCF_VERSION}
 mkdir -p $DOWNLOAD_DIR_FULL
@@ -69,7 +70,7 @@ echo $(date) start uploading controlplane assets into bosh director
 conductor/scripts/stemcell_loader.sh -s ${STEMCELL_VER} -i 233
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
 bosh upload-stemcell ${DOWNLOAD_DIR}/stemcells/${STEMCELL_VER}/*bosh-stemcell*.tgz
-bosh upload-release ${DOWNLOAD_DIR_FULL}/bosh-dns-aliases-release-*.tgz
+# bosh upload-release ${DOWNLOAD_DIR_FULL}/bosh-dns-aliases-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/credhub-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/garden-runc-release-*.tgz
 bosh upload-release ${DOWNLOAD_DIR_FULL}/postgres-release-*.tgz

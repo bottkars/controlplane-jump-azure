@@ -217,3 +217,9 @@ om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 
 popd
 echo "opsman deployment finished at $(date)"
+
+
+if [ "${CONTROLPLANE_AUTOPILOT}" = "TRUE" ]; then
+    evho "Starting Control Plane Deployment"
+    ${SCRIPT_DIR}/deploy_controlplane.sh 
+fi    
