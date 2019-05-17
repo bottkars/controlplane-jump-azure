@@ -9,7 +9,8 @@ You will need
 
 - An Azure Subscription
 - A Service Principal
-- A Pivotal Network Refresh Token 
+- A Pivotal Network Refresh Token
+- Access to Pivotal Automation Control Plane Components on Pivnet
 - local machine with azure az cli
 
 With this Guide you Create
@@ -80,6 +81,8 @@ ENV_NAME=control
 ENV_SHORT_NAME=cckb
 CONTROLPLANE_DOMAIN_NAME=<your domain, e.g. domain.com>
 CONTROLPLANE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
+CONTROLPLANE_AUTOPILOT=<TRUE or FALSE> to start automatic install of Control Plane from BosH Release
+USE_SELF_CERTS=<TRUE or FALSE> to start automatic install of Control Plane from BosH Release
 ```
 
 source the env file with
@@ -114,7 +117,27 @@ az group deployment validate --resource-group ${JUMPBOX_RG} \
     keyVaultRG=${VAULT_RG}
 ```
 
-### deploy all things
+### deploy all things using standard Parameters
+
+```bash
+az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group deployment create --resource-group ${JUMPBOX_RG} \
+    --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
+    --parameters \
+    adminUsername=${ADMIN_USERNAME} \
+    sshKeyData="$(cat ~/${JUMPBOX_NAME}.pub)" \
+    JumphostDNSLabelPrefix=${JUMPBOX_NAME} \
+    envName=${ENV_NAME} \
+    envShortName=${ENV_SHORT_NAME} \
+    CONTROLPLANEDomainName=${CONTROLPLANE_DOMAIN_NAME} \
+    CONTROLPLANESubdomainName=${CONTROLPLANE_SUBDOMAIN_NAME} \
+    CONTROLPLANEAutopilot=${CONTROLPLANE_AUTOPILOT} \
+    useSelfCerts=${USE_SELF_CERTS} \
+    keyVaultName=${AZURE_VAULT} \
+    keyVaultRG=${VAULT_RG}
+```
+
+### deploy all using custom Parameters
 
 ```bash
 az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
@@ -131,7 +154,6 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     keyVaultName=${AZURE_VAULT} \
     keyVaultRG=${VAULT_RG}
 ```
-
 ## clean/delete deployment
 
 use this to delete the keyvault policy and remove all deployed resources
