@@ -1,7 +1,10 @@
-
+#!/usr/bin/env bash
 source ~/.env.sh
 
 cd ${HOME_DIR}
+mkdir -p ${LOG_DIR}
+exec &> >(tee -a "${LOG_DIR}/${MYSELF}.$(date '+%Y-%m-%d-%H').log")
+exec 2>&1
 eval "$(om --env ${HOME_DIR}/om_${ENV_NAME}.env bosh-env --ssh-private-key $HOME/opsman)"
 
 PRODUCT_SLUG="p-control-plane-components"
