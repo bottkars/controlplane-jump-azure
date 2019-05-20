@@ -108,7 +108,7 @@ ssh-keygen -t rsa -f ~/${JUMPBOX_NAME} -C ${ADMIN_USERNAME}
 ### validate all things
 
 ```bash
-az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group create --name ${JUMPBOX_RG} --location ${LOCATION}
 az group deployment validate --resource-group ${JUMPBOX_RG} \
     --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
@@ -126,7 +126,7 @@ az group deployment validate --resource-group ${JUMPBOX_RG} \
 ### deploy all things using standard Parameters
 
 ```bash
-az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group create --name ${JUMPBOX_RG} --location ${LOCATION}
 az group deployment create --resource-group ${JUMPBOX_RG} \
     --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
@@ -144,7 +144,7 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
 ### deploy all using custom Parameters
 
 ```bash
-az group create --name ${JUMPBOX_RG} --location ${AZURE_REGION}
+az group create --name ${JUMPBOX_RG} --location ${LOCATION}
 az group deployment create --resource-group ${JUMPBOX_RG} \
     --template-uri https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/$BRANCH/azuredeploy.json \
     --parameters \
@@ -167,7 +167,7 @@ the base provisioning of the VM takes 5 to 10 Minutes on Azure.
 when provisioning is done, ssh into the Jumphost:
 
 ```Bash
-ssh -i ~/${JUMPBOX_NAME} ${ADMIN_USERNAME}@${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com
+ssh -i ~/${JUMPBOX_NAME} ${ADMIN_USERNAME}@${JUMPBOX_NAME}.${LOCATION}.cloudapp.azure.com
 ```
 
 tail the installation log in the root directory
@@ -201,7 +201,7 @@ use this to delete the keyvault policy and remove all deployed resources
 az keyvault delete-policy --name ${AZURE_VAULT} --object-id $(az vm identity show --resource-group ${JUMPBOX_RG} --name controlplanejumphost --query principalId --output tsv)
 az group delete --name ${JUMPBOX_RG} --yes
 az group delete --name ${ENV_NAME} --yes
-ssh-keygen -R "${JUMPBOX_NAME}.${AZURE_REGION}.cloudapp.azure.com"
+ssh-keygen -R "${JUMPBOX_NAME}.${LOCATION}.cloudapp.azure.com"
 ```
 
 ## TBD
