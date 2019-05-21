@@ -1,6 +1,7 @@
 # controlplane-jump-azure
 
-This Repo set´s up the "Control Plane" for Pivotal Platform Automation from a JumpHost on Azure
+This Repo set´s up the a secure provisioned Jumphost to deploy "Control Plane" for Pivotal Platform Automation.
+This is a privately maintained Repo for testing and training and no official Pivotal Repo
 
 in Addition to the [Documentation](http://docs.pivotal.io/platform-automation/), Azure KeyVault an System managed identities are used to
 Store Secrets and Credentials
@@ -18,7 +19,8 @@ With this Guide you Create
 
 - a Key Vault
 - A JumpHost on Azure with [Sytem Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/tutorial-linux-vm-access-nonaad) to Access the Vault
-- An PCF Operation Manager
+- An PCF Operations Manager
+- PCF Control Plane based on Control Plane Private Repo ( requires restricted access from PivNet )
 
 This Repo will Provide
 
