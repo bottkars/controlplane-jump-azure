@@ -14,6 +14,7 @@ You will need
 - Access to Pivotal Automation Control Plane Components on Pivnet
 - local machine with azure az cli
 - a Hosted (Sub)domain for the DNS Zone for Control Plane ( e.g. Google Domain )
+- jq package
 
 With this Guide you Create
 
