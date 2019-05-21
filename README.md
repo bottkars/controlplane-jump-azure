@@ -41,11 +41,11 @@ The Template to deploy the JumpBox assumes that the Key-Vault is in the Same sub
 ```bash
 AZURE_VAULT=<your vaultname, name must be unique fro AZURE_VAULT.vault.azure.com>
 VAULT_RG=<your Vault Resource Group>
-LOCATION=<azure location, e.g. westus, westeurope>
+AZURE_REGION=<azure location, e.g. westus, westeurope>
 ## Create RG to set your KeyVault
-az group create --name ${VAULT_RG} --location ${LOCATION}
+az group create --name ${VAULT_RG} --location ${AZURE_REGION}
 ## Create keyVault
-az keyvault create --name ${AZURE_VAULT} --resource-group ${VAULT_RG} --location ${LOCATION}
+az keyvault create --name ${AZURE_VAULT} --resource-group ${VAULT_RG} --location ${AZURE_REGION}
 ```
 
 #### create SP and assign values to the vault  secrets
