@@ -39,7 +39,8 @@ The Template to deploy the JumpBox assumes that the Key-Vault is in the Same sub
 #### create the KeyVault
 
 ```bash
-AZURE_VAULT=<your vaultname, name must be unique fro AZURE_VAULT.vault.azure.com>
+set -u
+AZURE_VAULT=<your vaultname, name must be unique for AZURE_VAULT.vault.azure.com>
 VAULT_RG=<your Vault Resource Group>
 AZURE_REGION=<azure location, e.g. westus, westeurope>
 ## Create RG to set your KeyVault
@@ -83,6 +84,7 @@ ENV_NAME=control
 ENV_SHORT_NAME=cckb
 CONTROLPLANE_DOMAIN_NAME=<your domain, e.g. domain.com>
 CONTROLPLANE_SUBDOMAIN_NAME=<your subdomain for control plane, e.g.control>
+BRANCH=master # the version of controlplane-jump-azure to use
 ```
 
 you might also add some optional Parameters to override default values:
