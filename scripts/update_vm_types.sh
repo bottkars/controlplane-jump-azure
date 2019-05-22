@@ -19,9 +19,10 @@ az login --service-principal \
 -p $TF_VAR_client_secret \
 --tenant $TF_VAR_tenant_id
 
-F_TYPES=$(az vm list-sizes --location ${LOCATION} --query "[?contains(name,'Standard_F')]" | jq .[])
-DSv2_TYPES=$(az vm list-sizes --location ${LOCATION} --query "[?contains(name,'Standard_DS')] | [?contains(name,'_v2')]" | jq .[])
-Dsv3_TYPES=$(az vm list-sizes --location ${LOCATION} --query "[?contains(name,'Standard_D')] | [?contains(name,'s_v3')]" | jq .[])
+E_TYPES=$(az vm list-sizes -o json --location westeurope --query "[?contains(name,'Standard_E')] | [?contains(name,'s_v3')]" | jq .[])
+F_TYPES=$(az vm list-sizes -o json --location ${LOCATION} --query "[?contains(name,'Standard_F')]" | jq .[])
+DSv2_TYPES=$(az vm list-sizes -o json --location ${LOCATION} --query "[?contains(name,'Standard_DS')] | [?contains(name,'_v2')]" | jq .[])
+Dsv3_TYPES=$(az vm list-sizes -o json --location ${LOCATION} --query "[?contains(name,'Standard_D')] | [?contains(name,'s_v3')]" | jq .[])
 
 az logout
 
@@ -32,7 +33,7 @@ curl --path /api/v0/vm_types  \
 om --env $HOME/om_${ENV_NAME}.env \
    curl --path /api/v0/vm_types \
    --request PUT \
---data $(echo $DSV2_TYPES $Dsv3_TYPES $F_TYPES |  \
+--data $(echo $DSV2_TYPES $Dsv3_TYPES $F_TYPES $E_TYPES |  \
 jq -sc '{"vm_types": [.[] | {"name": .name, "ram": .memoryInMb, "ephemeral_disk": .resourceDiskSizeInMb, "cpu": .numberOfCores}]}')
 
 
