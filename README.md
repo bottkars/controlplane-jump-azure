@@ -108,7 +108,7 @@ ssh-keygen -t rsa -f ~/${JUMPBOX_NAME} -C ${ADMIN_USERNAME}
 ```
 
 ## start deployment
-[image](https://user-images.githubusercontent.com/8255007/57944340-fcbba080-78d6-11e9-89e4-bf771c7288ee.png)
+![image](https://user-images.githubusercontent.com/8255007/57944340-fcbba080-78d6-11e9-89e4-bf771c7288ee.png)
 
 ### validate all things
 
