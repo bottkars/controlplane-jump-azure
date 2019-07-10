@@ -5,3 +5,4 @@ https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/script
 https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/accept_eula.sh
 https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/deploy_controlplane.sh
 https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/om_init.sh
+https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/upload_releases.sh
