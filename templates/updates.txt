@@ -1,2 +1,2 @@
-https://raw.githubusercontent.com/bottkars/templates/versions.yml
-https://raw.githubusercontent.com/bottkars/templates/control-plane-deployment-kb-5.yml
+https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/templates/versions.yml
+https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/templates/control-plane-deployment-kb-5.yml

@@ -35,9 +35,16 @@ bosh upload-stemcell --sha1 b20dca6641ab6bbf62e2265bc470ff3755c142d5 \
 bosh upload-release --sha1 efc10ac0f4acae23637ce2c6f864d20df2e3a781 \
   https://bosh.io/d/github.com/cloudfoundry-incubator/windows-utilities-release?v=0.11.0
 
-  bosh upload-release --sha1 aecb23d96247ff691c7313801add040d0741200d \
+bosh upload-release --sha1 aecb23d96247ff691c7313801add040d0741200d \
   https://bosh.io/d/github.com/cloudfoundry/windowsfs-online-release?v=1.7.0
-  bosh upload-release --sha1 f1d0ae10a48be36afae76a83526427330a40a737 \
+
+bosh upload-release --sha1 f1d0ae10a48be36afae76a83526427330a40a737 \
   https://bosh.io/d/github.com/cloudfoundry-incubator/winc-release?v=1.14.0
-  bosh upload-release --sha1 1f70a862621b2d879277c0eee6147bb8bddda060 \
+
+bosh upload-release --sha1 1f70a862621b2d879277c0eee6147bb8bddda060 \
   https://bosh.io/d/github.com/cloudfoundry-incubator/garden-windows-bosh-release?v=0.16.0
+
+bosh deploy -n -d control-plane ${HOME_DIR}/conductor/templates/control-plane-kb-5.yml \
+   --vars-file=${HOME_DIR}/bosh-vars.yml \
+   --ops-file=${HOME_DIR}/vm-extensions-control.yml \
+   --vars-file=${HOME_DIR}/conductor/templates/versions.yml  
