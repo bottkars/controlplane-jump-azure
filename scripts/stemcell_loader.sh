@@ -1,4 +1,4 @@
-##!/usr/bin/env bash
+#!/usr/bin/env bash
 source ~/.env.sh
 cd ${HOME_DIR}
 MYSELF=$(basename $0)
