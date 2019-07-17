@@ -41,6 +41,13 @@ AZURE_CLIENT_ID=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURECLIEN
 AZURE_TENANT_ID=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURETENANTID?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
 PIVNET_UAA_TOKEN=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/PIVNETUAATOKEN?api-version=2016-10-01 -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
 
+az login --service-principal \
+  --username ${AZURE_CLIENT_ID} \
+  --password ${AZURE_CLIENT_SECRET} \
+  --tenant ${AZURE_TENANT_ID}
+
+
+
 OPS_MANAGER_STORAGE_ACCOUNT=$(terraform output -state ~/pivotal-cf-terraforming-azure-*/terraforming-control-plane/terraform.tfstate ops_manager_storage_account)
 
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
