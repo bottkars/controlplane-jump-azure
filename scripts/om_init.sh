@@ -60,7 +60,8 @@ pushd ${HOME_DIR}
 PRODUCT_SLUG="elastic-runtime"
 RELEASE_ID="363705"
 #
-wget -O om https://github.com/pivotal-cf/om/releases/download/0.57.0/om-linux && \
+OM_VER=2.0.1
+wget -O om https://github.com/pivotal-cf/om/releases/download/${OM_VER}/om-linux-${OM_VER} && \
   chmod +x om && \
   sudo mv om /usr/local/bin/
 ###  

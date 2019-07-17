@@ -44,7 +44,7 @@ bosh upload-release --sha1 f1d0ae10a48be36afae76a83526427330a40a737 \
 bosh upload-release --sha1 1f70a862621b2d879277c0eee6147bb8bddda060 \
   https://bosh.io/d/github.com/cloudfoundry-incubator/garden-windows-bosh-release?v=0.16.0
 
-bosh deploy -n -d control-plane ${HOME_DIR}/conductor/templates/control-plane-kb-5.yml \
+bosh deploy -n -d control-plane ${HOME_DIR}/conductor/templates/control-plane-deployment-kb-5.yml \
    --vars-file=${HOME_DIR}/bosh-vars.yml \
    --ops-file=${HOME_DIR}/vm-extensions-control.yml \
    --vars-file=${HOME_DIR}/conductor/templates/versions.yml  
