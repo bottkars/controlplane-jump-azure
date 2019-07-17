@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 source ~/.env.sh
+set -eux
 cd ${HOME_DIR}
 MYSELF=$(basename $0)
 mkdir -p ${LOG_DIR}
@@ -33,13 +34,22 @@ EXPORT_FILE=${HOME_DIR}/$(uuidgen)
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
     export-installation --output-file ${EXPORT_FILE}
 
+TOKEN=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -s -H Metadata:true | jq -r .access_token)
+AZURE_SUBSCRIPTION_ID=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute?api-version=2017-08-01" | jq -r .subscriptionId)
+AZURE_CLIENT_SECRET=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURECLIENTSECRET?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+AZURE_CLIENT_ID=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURECLIENTID?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+AZURE_TENANT_ID=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/AZURETENANTID?api-version=2016-10-01 -s -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+PIVNET_UAA_TOKEN=$(curl https://${AZURE_VAULT}.vault.azure.net/secrets/PIVNETUAATOKEN?api-version=2016-10-01 -H "Authorization: Bearer ${TOKEN}" | jq -r .value)
+
+BOSH_STORAGE_ACCOUNT_NAME=$(terraform output -state ~/pivotal-cf-terraforming-azure-*/terraforming-control-plane/terraform.tfstate ops_manager_storage_account)
+
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
---name ${ENV_SHORT_NAME}opsmanager --resource-group ${ENV_NAME})
-export OPSMAN_IMAGE_VERSION=2.5.0-build.158
+--name ${BOSH_STORAGE_ACCOUNT_NAME} --resource-group ${ENV_NAME})
+export OPSMAN_IMAGE_VERSION=$(grep -A1 'OPSMAN_IMAGE:' ${ENV_DIR}/opsman.yml | tail -n1 | cut -c15- )
 
 export OPSMAN_IMAGE_URI=$(dirname ${OPS_MANAGER_IMAGE_URI})/ops-manager-${OPSMAN_IMAGE_VERSION}.vhd
 
-AZURE_STORAGE_ENDPOINT=$(az storage account show --name ${ENV_SHORT_NAME}opsmanager \
+AZURE_STORAGE_ENDPOINT=$(az storage account show --name ${BOSH_STORAGE_ACCOUNT_NAME} \
  --resource-group ${ENV_NAME} \
   --query '[primaryEndpoints.blob]' --output tsv)
 OPSMAN_LOCAL_IMAGE=${AZURE_STORAGE_ENDPOINT}opsmanagerimage/opsman-image-${OPSMAN_IMAGE_VERSION}.vhd
@@ -81,7 +91,6 @@ az vm create --name ${ENV_NAME}-ops-manager-vm  --resource-group ${ENV_NAME} \
  --ssh-key-value ${HOME_DIR}/.ssh/authorized_keys
 
  om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-    --decryption-passphrase $PIVNET_UAA_TOKEN \
     import-installation --installation $EXPORT_FILE
 
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
@@ -89,6 +98,5 @@ update-ssl-certificate \
     --certificate-pem "$(cat ${HOME_DIR}/fullchain.cer)" \
     --private-key-pem "$(cat ${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key)"
 
-
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-apply-changes --skip-unchanged-products    
+    apply-changes --skip-deployed-products    
