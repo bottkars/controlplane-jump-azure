@@ -103,7 +103,7 @@ az vm create --name ${ENV_NAME}-ops-manager-vm  --resource-group ${ENV_NAME} \
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
 update-ssl-certificate \
     --certificate-pem "$(cat ${HOME_DIR}/fullchain.cer)" \
-    --private-key-pem "$(cat ${HOME_DIR}/${PKS_SUBDOMAIN_NAME}.${PKS_DOMAIN_NAME}.key)"
+    --private-key-pem "$(cat ${HOME_DIR}/${CONTROLPLANE_SUBDOMAIN_NAME}.${CONTROLPLANE_DOMAIN_NAME}.key)"
 
 om --env "${HOME_DIR}/om_${ENV_NAME}.env"  \
-    apply-changes --skip-deployed-products    
+    apply-changes --skip-deploy-products    
