@@ -97,3 +97,9 @@ om --env ~/om_${ENV_NAME}.env \
   --vars-file  ~/conductor/templates/vm-lb-extensions-minio-vars.yml
 om --env ~/om_${ENV_NAME}.env apply-changes
 ```
+
+```bash
+bosh deploy -n -d minio ~/conductor/templates/minio.yml \
+  --vars-file=~/bosh-vars.yml \
+  --ops-file=~/conductor/templates/vm-extensions-minio.yml
+```
