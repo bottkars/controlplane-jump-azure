@@ -86,6 +86,14 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
 
 ```bash
 wget -O - https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/update.sh | bash
+```
 
 
+### minio
+```bash
+om --env ~/om_${ENV_NAME}.env \
+  create-vm-extension \
+  --config  ~/conductor/templates/vm-lb-extensions-minio.yml \
+  --vars-file  ~/conductor/templates/vm-lb-extensions-minio-vars.yml
+om --env ~/om_${ENV_NAME}.env apply-changes
 ```
