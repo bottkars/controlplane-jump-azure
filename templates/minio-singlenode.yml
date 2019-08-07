@@ -78,7 +78,7 @@ instance_groups:
   networks:
   - name: ((network_name))
   vm_type: ((vm_type))
-  persistent_disk_type: 2048
+  persistent_disk: 520000
   stemcell: default
 
 update:
