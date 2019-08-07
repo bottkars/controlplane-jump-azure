@@ -81,3 +81,11 @@ az group deployment create --resource-group ${JUMPBOX_RG} \
     opsmanImage=${OPS_MANAGER_IMAGE} \
     opsmanImageRegion=${OPS_MANAGER_IMAGE_REGION}
 ```
+
+### update deployment
+
+```bash
+wget -O - https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/scripts/update.sh | bash
+
+
+```
