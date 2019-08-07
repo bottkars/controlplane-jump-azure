@@ -1,4 +1,3 @@
-https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/templates/versions.yml
 https://raw.githubusercontent.com/bottkars/controlplane-jump-azure/master/templates/control-plane-deployment-kb-5.yml
 https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/control-plane-deployment-kb-5.yml
 https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/control-plane-deployment-windows-worker-5.yml
