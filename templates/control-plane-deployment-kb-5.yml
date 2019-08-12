@@ -216,8 +216,8 @@ instance_groups:
       tls_bind_port: 443
       lets_encrypt:
         enabled: true
-      # tls_cert: ((control-plane-tls.certificate))
-      # tls_key: ((control-plane-tls.private_key))
+      tls_cert: ((control-plane-tls.certificate))
+      tls_key: ((control-plane-tls.private_key))
       token_signing_key: ((token_signing_key))    
   lifecycle: service
   name: web
