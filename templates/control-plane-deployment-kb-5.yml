@@ -269,7 +269,7 @@ instance_groups:
   update:
     max_in_flight: 1
   vm_type: ((vm_type))
-- azs: ((azs))
+- azs: ((azs)) # woekr
   instances: 1
   jobs:
   - release: concourse
@@ -283,7 +283,7 @@ instance_groups:
         listen_address: 0.0.0.0:7777
         listen_network: tcp
   lifecycle: service
-  name: worker
+  name: worker-linux
   networks:
   - default:
     - dns
@@ -292,7 +292,7 @@ instance_groups:
   stemcell: default
   update:
     max_in_flight: 1
-  vm_type: ((vm_type))
+  vm_type: ((worker_vm_type))
 
 update:
   canaries: 1
