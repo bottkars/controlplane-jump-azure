@@ -215,7 +215,7 @@ instance_groups:
           password: ((postgres_password))
       tls_bind_port: 443
       lets_encrypt:
-        enabled: true
+        enabled: false
       tls_cert: ((control-plane-tls.certificate))
       tls_key: ((control-plane-tls.private_key))
       token_signing_key: ((token_signing_key))    
