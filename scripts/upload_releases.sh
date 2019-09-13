@@ -14,6 +14,10 @@ bosh upload-release https://bosh.io/d/github.com/cloudfoundry-incubator/windows-
 bosh upload-release https://bosh.io/d/github.com/cloudfoundry/windowsfs-online-release?v=1.7.0
 bosh upload-release https://bosh.io/d/github.com/cloudfoundry-incubator/winc-release?v=1.14.0
 bosh upload-release https://bosh.io/d/github.com/cloudfoundry-incubator/garden-windows-bosh-release?v=0.16.0
+bosh upload-release git+https://github.com/vito/telegraf-boshrelease
+bosh upload-release git+https://github.com/vito/telegraf-agent-boshrelease
+bosh upload-release https://bosh.io/d/github.com/vito/grafana-boshrelease?v=13.3.0
+bosh upload-release git+https://github.com/cloudfoundry-community/influxdb-boshrelease
 
 bosh deploy -n -d control-plane ${HOME_DIR}/conductor/templates/control-plane-deployment-kb-5.yml \
    --vars-file=${HOME_DIR}/bosh-vars.yml \
