@@ -23,3 +23,16 @@ bosh deploy -n -d control-plane ${HOME_DIR}/conductor/templates/control-plane-de
    --vars-file=${HOME_DIR}/bosh-vars.yml \
    --ops-file=${HOME_DIR}/vm-extensions-control.yml \
    --vars-file=${HOME_DIR}/conductor/templates/versions.yml  
+
+
+
+
+bosh deploy -d control-plane $HOME/conductor/templates/control-plane-deployment-kb-5.yml \
+    --vars-file=$HOME/bosh-vars.yml \
+         --ops-file=$HOME/vm-extensions-control.yml \
+         --ops-file=$HOME/conductor/templates/generic-oidc.yml \
+         --ops-file=$HOME/conductor/templates/add-main-team-oidc-users.yml \
+         --ops-file=$HOME/conductor/templates/add-main-team-oidc-groups.yml \
+         --ops-file=$HOME/conductor/templates/github-auth.yml \
+         --ops-file=$HOME/conductor/templates/influxdb.yml \
+         --vars-file=$HOME/conductor/templates/versions.yml  --no-redact 
