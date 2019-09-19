@@ -8,3 +8,7 @@ https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/t
 https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/github-auth.yml
 https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/minio.yml
 https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/influxdb.yml
+https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/concourse_overview.yml
+https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/concourse_builds.yml
+https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/concourse_response_times.yml
+https://raw.githubusercontent.com/bottkars/pcf-controlplane-azurestack/testing/templates/concourse_golang.yml
